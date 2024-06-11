@@ -1,6 +1,6 @@
 package com.example.simuladorclinica.generators;
 
-import backend.org.errors.NoMoreRandomNumbers;
+import com.example.simuladorclinica.errors.NoMoreRandomNumbers;
 
 import java.util.ArrayList;
 import java.util.List;
