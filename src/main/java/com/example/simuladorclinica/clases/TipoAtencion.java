@@ -1,11 +1,17 @@
 package com.example.simuladorclinica.clases;
 
-public class TipoAtencion {
+public enum TipoAtencion {
+    General("General"),
+    Emergencia("Emergencia"),
+    Especialista("Especialista"),
+    Terapia("Terapia"),
+    Recepcion("Recepcion");
+
     // Atributo de la clase
     private String nombre;
 
     // Constructor
-    public TipoAtencion(String nombre) {
+    TipoAtencion(String nombre) {
         this.nombre = nombre;
     }
 
