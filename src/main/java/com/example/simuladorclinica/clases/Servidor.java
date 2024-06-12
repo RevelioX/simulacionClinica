@@ -1,5 +1,6 @@
 package com.example.simuladorclinica.clases;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Servidor {
@@ -9,9 +10,9 @@ public class Servidor {
 
   private TipoAtencion tipoAtencion;
 
-  public Servidor(List<Paciente> cola, Estado estado, TipoAtencion tipoAtencion) {
-    this.cola = cola;
-    this.estado = estado;
+  public Servidor( TipoAtencion tipoAtencion) {
+    this.cola = new ArrayList<>();
+    this.estado = Estado.LIBRE; //todo hay que hacer que estados sea un enum. El servidor se crea en estado libre.
     this.tipoAtencion = tipoAtencion;
   }
 
