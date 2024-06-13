@@ -6,7 +6,11 @@ public enum Estado {
   OCUPADO("Ocupado"),
   ESPERANDO_ATENCION ("Esperando Atencion"),
 
-  SIENDO_ATENDIDO ("Siendo Atendido");
+  SIENDO_ATENDIDO ("Siendo Atendido"),
+
+  ESPERANDO_RECEPCION ("Esperando Recepcion"),
+
+  SIENDO_ATENDIDO_RECEPCION ("Siendo Atendido Recepcion");
 
 
   private String nombre;
