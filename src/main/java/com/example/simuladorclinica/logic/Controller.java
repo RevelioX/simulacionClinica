@@ -1,9 +1,7 @@
 package com.example.simuladorclinica.logic;
 
-import com.example.simuladorclinica.clases.Evento;
-import com.example.simuladorclinica.clases.Servidor;
-import com.example.simuladorclinica.clases.TipoAtencion;
-import com.example.simuladorclinica.clases.TipoEvento;
+import com.example.simuladorclinica.VectorEstado;
+import com.example.simuladorclinica.clases.*;
 import com.example.simuladorclinica.generators.Generador;
 import com.example.simuladorclinica.generators.GeneradorNumerosExponencial;
 import com.example.simuladorclinica.generators.GeneradorNumerosNormales;
@@ -12,9 +10,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.stream.Collectors;
 
 public class Controller {
-    private List<String> vectorSimulacion = new ArrayList<>();
+    private VectorEstado vectorEstado;
     private PriorityQueue<Evento> eventos;
     private double reloj;
     private double tiempoDesdeAnteriorEvento;
@@ -159,6 +158,66 @@ public class Controller {
     }
 
     private resolverEventoLlegada(Evento evento){
-        if(seDebeMostrar)
+        if(seDebeMostrar){
+            vectorEstado.setReloj(reloj);
+            vectorEstado.setTipoEvento(evento.getTipoEvento().getNombre());
+        }
+
+        List<Servidor> serviroresTipoCorrespondiente = servidores.stream().filter(
+                servidor -> {
+                    boolean b = servidor.getTipoAtencion() == evento.getTipoEvento().getTipoAtencion();
+                    return b;
+                }
+        ).collect(Collectors.toList());
+
+        Servidor servidorCorrespondiente = serviroresTipoCorrespondiente.stream().min(
+            Comparator.comparing(Servidor::getLongitud)
+        ).orElse(null);
+        boolean servidorVacio = servidorCorrespondiente.getEstado() == Estado.LIBRE;
+
+        Paciente paciente = new Paciente(evento.getTipoEvento().getTipoAtencion());
+        servidorCorrespondiente.añadirCola(paciente);
+
+        //generar el proximo evento de llegada
+        double tiempo = 0;
+        if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.General){
+            tiempo = generadorLlegadasGeneral.getValor();
+        } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Emergencia){
+            tiempo = generadorLlegadasEmergencia.getValor();
+        } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Especialista){
+            tiempo = generadorLlegadasEspecialista.getValor();
+        } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Terapia){
+            tiempo = generadorLlegadaTerapia.getValor();
+        }
+
+        double tiempoProximoEvento = tiempo + reloj;
+
+        Evento sigEvento = new Evento(tiempoProximoEvento, evento.getTipoEvento() );
+        eventos.add(sigEvento);
+
+        if(servidorVacio){
+            tiempo = 0;
+            TipoEvento tipoEventoFinAtencion = null;
+            if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.General){
+                tiempo = generadorFinAtencionGeneral.getValor();
+                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_GENERAL;
+            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Emergencia){
+                tiempo = generadorFinAtencionEmergencia.getValor();
+                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_EMERGENCIA;
+            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Especialista){
+                tiempo = generadorFinAtencionEspecialista.getValor();
+                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_ESPECIALIDAD;
+            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Terapia){
+                tiempo = generadorFinAtencionTerapia.getValor();
+                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_TERAPIA;
+            }
+            tiempoProximoEvento = tiempo + reloj;
+
+            sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion);
+            eventos.add(sigEvento);
+        }
+
+
     }
+
 }

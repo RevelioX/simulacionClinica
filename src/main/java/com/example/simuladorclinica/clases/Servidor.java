@@ -45,6 +45,10 @@ public class Servidor {
 
   }
 
+  public TipoAtencion getTipoAtencion(){
+    return this.tipoAtencion;
+  }
+
   public String esTipoAtencion(TipoAtencion t){
     return t.getNombre();
   }

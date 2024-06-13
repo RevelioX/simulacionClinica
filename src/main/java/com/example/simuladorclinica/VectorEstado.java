@@ -9,12 +9,14 @@ public class VectorEstado {
     String LlegadaEmergencia_RND;
     String LlegadaEmergencia_TiempoEntreLlegadas;
     String LlegadaEmergencia_ProximaLlegada;
-
     String LlegadaEspecialista_RND;
     String LlegadaEspecialista_TiempoEntreLlegadas;
     String LlegadaEspecialista_ProximaLlegada;
-
     String LlegadaTerapia_RND;
     String LlegadaTerapia_TiempoEntreLlegadas;
     String LlegadaTerapia_ProximaLlegada;
+
+    //todo - Aca faltaría lo relacionado a los eventos fin_atención pero hay q definirlo con Colo.
+
+
 }

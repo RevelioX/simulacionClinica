@@ -19,7 +19,7 @@ public abstract class Generador {
 
     public double getValor() {
         if(valores.isEmpty()){
-            throw new NoMoreRandomNumbers();
+            generarValor(1000);
         }
         Double valor = valores.remove(0);
         return valor;

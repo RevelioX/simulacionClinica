@@ -1,21 +1,25 @@
 package com.example.simuladorclinica.clases;
 
 public enum TipoEvento {
-  LLEGADA_PACIENTE_GENERAL("Llegada Paciente General"),
-  LLEGADA_PACIENTE_EMERGENCIA("Llegada Paciente Emergencia"),
-  LLEGADA_PACIENTE_ESPECIALIDAD("Llegada Paciente Especialidad"),
-  LLEGADA_PACIENTE_TERAPIA("Llegada Paciente Terapia"),
-  FIN_ATENCION_GENERAL("Fin atención general"),
-  FIN_ATENCION_EMERGENCIA("Fin atención emergencia"),
-  FIN_ATENCION_ESPECIALIDAD("Fin atención especialidad"),
-  FIN_ATENCION_TERAPIA("Fin atención terapia"),
-  FIN_ATENCION_RECEPCION("Fin atención recepción");
+  LLEGADA_PACIENTE_GENERAL("Llegada Paciente General", TipoAtencion.General),
+  LLEGADA_PACIENTE_EMERGENCIA("Llegada Paciente Emergencia", TipoAtencion.Emergencia),
+  LLEGADA_PACIENTE_ESPECIALIDAD("Llegada Paciente Especialidad", TipoAtencion.Especialista),
+  LLEGADA_PACIENTE_TERAPIA("Llegada Paciente Terapia", TipoAtencion.Terapia),
+  FIN_ATENCION_GENERAL("Fin atención general", TipoAtencion.General),
+  FIN_ATENCION_EMERGENCIA("Fin atención emergencia", TipoAtencion.Emergencia),
+  FIN_ATENCION_ESPECIALIDAD("Fin atención especialidad", TipoAtencion.Especialista),
+  FIN_ATENCION_TERAPIA("Fin atención terapia", TipoAtencion.Terapia),
+  FIN_ATENCION_RECEPCION("Fin atención recepción", TipoAtencion.Recepcion);
 
   private String nombre;
 
+  private TipoAtencion tipoAtencion;
 
-  TipoEvento(String nombre) {
+
+  TipoEvento(String nombre, TipoAtencion tipoAtencion)
+  {
     this.nombre = nombre;
+    this.tipoAtencion = tipoAtencion;
   }
 
   public String getNombre() {
@@ -24,6 +28,10 @@ public enum TipoEvento {
 
   public void setNombre(String nombre) {
     this.nombre = nombre;
+  }
+
+  public TipoAtencion getTipoAtencion(){
+    return this.tipoAtencion;
   }
 
   public boolean esDeLlegada(){

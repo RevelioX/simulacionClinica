@@ -6,9 +6,21 @@ public class Evento {
 
   private TipoEvento tipoEvento;
 
+  private Servidor servidor;
+
+  public Servidor getServidor() {
+    return servidor;
+  }
+
   public Evento(double tiempo, TipoEvento tipoEvento) {
     this.tiempo = tiempo;
     this.tipoEvento = tipoEvento;
+  }
+
+  public Evento(double tiempo, TipoEvento tipoEvento, Servidor servidor){
+    this.tiempo = tiempo;
+    this.tipoEvento = tipoEvento;
+    this.servidor = servidor;
   }
 
   public double getTiempo() {
