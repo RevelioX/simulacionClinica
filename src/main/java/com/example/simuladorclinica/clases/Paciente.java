@@ -30,11 +30,6 @@ public class Paciente {
        this.tiempoEspera += tiempo;
     }
 
-    public Double getTiempoEspera (){
-        return tiempoEspera;
-    }
-
-
     public void setEdad(int edad) {
         this.edad = edad;
     }
