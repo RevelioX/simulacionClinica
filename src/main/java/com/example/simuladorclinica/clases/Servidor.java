@@ -41,8 +41,11 @@ public class Servidor {
     return cola.size() - 1;
   }
 
-  public void actualizarTiempoEsperaPacientes (Double d) {
-
+  public void actualizarTiempoEsperaPacientes(Double tiempo) {
+    for (int i = 1; i < cola.size(); i++) {
+      Paciente paciente = cola.get(i);
+      paciente.aumentarTiempoEspera(tiempo);
+    }
   }
 
   public TipoAtencion getTipoAtencion(){
