@@ -56,6 +56,10 @@ public class Servidor {
   }
 
   public void actualizarTiempoEsperaPacientes(Double tiempo) {
+    if (cola == null || cola.isEmpty()) {
+      return; // No hay pacientes en la cola
+    }
+
     for (int i = 1; i < cola.size(); i++) {
       Paciente paciente = cola.get(i);
       paciente.aumentarTiempoEspera(tiempo);
@@ -73,14 +77,4 @@ public class Servidor {
     }
     return this.tipoAtencion.equals(t);
   }
-
-
-
-
-
-
-
-
-
-
 }
