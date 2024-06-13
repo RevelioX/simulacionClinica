@@ -63,8 +63,12 @@ public class Servidor {
     return this.tipoAtencion;
   }
 
-  public String esTipoAtencion(TipoAtencion t){
-    return t.getNombre();
+  public Boolean esTipoAtencion(TipoAtencion t)
+  {
+    if (t == null) {
+      return false;
+    }
+    return this.tipoAtencion.equals(t);
   }
 
 
