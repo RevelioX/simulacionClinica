@@ -6,10 +6,7 @@ import com.example.simuladorclinica.generators.Generador;
 import com.example.simuladorclinica.generators.GeneradorNumerosExponencial;
 import com.example.simuladorclinica.generators.GeneradorNumerosNormales;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Controller {
@@ -173,7 +170,7 @@ public class Controller {
         Servidor servidorCorrespondiente = serviroresTipoCorrespondiente.stream().min(
             Comparator.comparing(Servidor::getLongitud)
         ).orElse(null);
-        boolean servidorVacio = servidorCorrespondiente.getEstado() == Estado.LIBRE;
+        boolean servidorVacio = Objects.equals(servidorCorrespondiente.getEstado(), Estado.LIBRE.getNombre());
 
         Paciente paciente = new Paciente(evento.getTipoEvento().getTipoAtencion());
         servidorCorrespondiente.añadirCola(paciente);

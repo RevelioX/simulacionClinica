@@ -1,10 +1,17 @@
 package com.example.simuladorclinica.clases;
 
-public class Estado {
+public enum Estado {
+
+  LIBRE("Libre"),
+  OCUPADO("Ocupado"),
+  ESPERANDO_ATENCION ("Esperando Atencion"),
+
+  SIENDO_ATENDIDO ("Siendo Atendido");
+
 
   private String nombre;
 
-  public Estado(String nombre) {
+  Estado(String nombre) {
     this.nombre = nombre;
   }
 
