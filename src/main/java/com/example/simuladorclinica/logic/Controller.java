@@ -36,7 +36,7 @@ public class Controller {
         this.desdeDondeMostrar = desdeDondeMostrar;
         this.lineasSimular = lineasSimular;
 
-
+        prepararColaEventos();
         instanciarGeneradoresLlegadas(mediaLlegadaGeneral, mediaLlegadaEmergencia,mediaLlegadaEspecialista, mediaLlegadaTerapia);
         instanciarGeneradoresAtencion(mediaAtencionGeneral, mediaAtencionEmergencia,mediaAtencionEspecialidad,mediaAtencionTerapia);
         instanciarServidores();
@@ -138,6 +138,7 @@ public class Controller {
                 seDebeMostrar = false;
             }
             Evento eventoAResolver = eventos.remove();
+            tiempoDesdeAnteriorEvento = reloj - eventoAResolver.getTiempo();
             reloj = eventoAResolver.getTiempo();
             resolverEvento(eventoAResolver);
             //todo - Falta por añadir logica
@@ -146,7 +147,7 @@ public class Controller {
 
     }
 
-    private resolverEvento(Evento evento){
+    private void resolverEvento(Evento evento){
         TipoEvento tipoEvento = evento.getTipoEvento();
         if(tipoEvento.esDeLlegada()){
             resolverEventoLlegada(evento);
@@ -215,9 +216,17 @@ public class Controller {
 
             sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion);
             eventos.add(sigEvento);
+
+            actualizarTiemposEspera();
         }
 
 
+    }
+
+    private void actualizarTiemposEspera(){
+        servidores.stream().forEach(
+                servidor -> { servidor.actualizarTiempoEsperaPacientes(tiempoDesdeAnteriorEvento); }
+        );
     }
 
 }
