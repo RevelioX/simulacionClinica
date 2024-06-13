@@ -31,6 +31,11 @@ public class Paciente {
 
     }
 
+    public Double getTiempoEspera (){
+        return tiempoEspera;
+    }
+
+
     public void setEdad(int edad) {
         this.edad = edad;
     }
