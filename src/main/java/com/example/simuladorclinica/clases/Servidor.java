@@ -18,13 +18,25 @@ public class Servidor {
 
   public Paciente finalizarAtencion (Boolean b){
     if (b) {
-      Paciente ultimo = cola.get(0);
-      ultimo.setTipoAtencion(TipoAtencion.Recepcion);
+      if (!cola.isEmpty()) {
+        Paciente ultimo = cola.get(0);
+        ultimo.setTipoAtencion(TipoAtencion.Recepcion);
+        ultimo.setEstado(Estado.SIENDO_ATENDIDO_RECEPCION);
+        cola.remove(0);
 
-      return ultimo;
+        if (!cola.isEmpty()) {
+          Paciente siguiente = cola.get(0);
+          siguiente.setEstado(Estado.SIENDO_ATENDIDO_RECEPCION);
+        }
+        return ultimo;
+      } else {
+        return null;
+      }
     } else {
-      Paciente elimando = cola.remove(0);
-      elimando = null;
+      if (!cola.isEmpty()) {
+        Paciente eliminado = cola.remove(0);
+        eliminado = null;
+      }
       return null;
     }
   }
