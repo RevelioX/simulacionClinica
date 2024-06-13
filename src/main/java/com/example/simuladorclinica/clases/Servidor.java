@@ -34,7 +34,9 @@ public class Servidor {
   }
 
   public void añadirCola(Paciente paciente){
-    cola.add(paciente);
+    if (cola.isEmpty()){
+      paciente.setEstado(Estado.SIENDO_ATENDIDO);
+    }else cola.add(paciente);
   }
 
   public int getLongitud(){
