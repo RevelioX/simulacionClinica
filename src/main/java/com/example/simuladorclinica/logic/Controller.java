@@ -5,6 +5,7 @@ import com.example.simuladorclinica.clases.*;
 import com.example.simuladorclinica.generators.Generador;
 import com.example.simuladorclinica.generators.GeneradorNumerosExponencial;
 import com.example.simuladorclinica.generators.GeneradorNumerosNormales;
+import com.example.simuladorclinica.generators.GeneradorNumerosUniformes;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,13 +24,15 @@ public class Controller {
     private Generador generadorFinAtencionEmergencia;
     private Generador generadorFinAtencionEspecialista;
     private Generador generadorFinAtencionTerapia;
+
+    private Generador generadorLlegadaRecepcion;
     private int lineasSimular;
 
     private int desdeDondeMostrar;
 
     boolean seDebeMostrar;
 
-    public prepararSimulacion(int lineasSimular, int desdeDondeMostrar, double mediaLlegadaGeneral, double mediaLlegadaEmergencia, double mediaLlegadaEspecialista, double mediaLlegadaTerapia, double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia){
+    public void prepararSimulacion(int lineasSimular, int desdeDondeMostrar, double mediaLlegadaGeneral, double mediaLlegadaEmergencia, double mediaLlegadaEspecialista, double mediaLlegadaTerapia, double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia){
         this.desdeDondeMostrar = desdeDondeMostrar;
         this.lineasSimular = lineasSimular;
 
@@ -58,6 +61,9 @@ public class Controller {
 
         generadorLlegadaTerapia = new GeneradorNumerosExponencial(mediaLlegadaTerapia);
         generadorLlegadaTerapia.generarValor(1000);
+
+        generadorLlegadaRecepcion = new GeneradorNumerosUniformes(0,1);
+        generadorLlegadaRecepcion.generarValor(1000);
     }
 
     private void instanciarGeneradoresAtencion(double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia){
@@ -127,7 +133,7 @@ public class Controller {
         eventos.add(eventoLlegadaEmergencia);
         eventos.add(eventoLlegadaTerapia);
     }
-    public simular(){
+    public void simular(){
         for(int i = 0; i < lineasSimular; i++){
             if (i > desdeDondeMostrar && i < desdeDondeMostrar + 300){
                 seDebeMostrar = true;
@@ -146,6 +152,12 @@ public class Controller {
 
     private void resolverEvento(Evento evento){
         TipoEvento tipoEvento = evento.getTipoEvento();
+
+        if(seDebeMostrar){
+            vectorEstado.setReloj(String.valueOf(reloj));
+            vectorEstado.setEvento(evento.getTipoEvento().getNombre());
+        }
+
         if(tipoEvento.esDeLlegada()){
             resolverEventoLlegada(evento);
         } else if(tipoEvento.esDeFinAtenciónNormal()){
@@ -155,11 +167,7 @@ public class Controller {
         }
     }
 
-    private resolverEventoLlegada(Evento evento){
-        if(seDebeMostrar){
-            vectorEstado.setReloj(reloj);
-            vectorEstado.setTipoEvento(evento.getTipoEvento().getNombre());
-        }
+    private void resolverEventoLlegada(Evento evento){
 
         List<Servidor> serviroresTipoCorrespondiente = servidores.stream().filter(
                 servidor -> {
@@ -171,7 +179,7 @@ public class Controller {
         Servidor servidorCorrespondiente = serviroresTipoCorrespondiente.stream().min(
             Comparator.comparing(Servidor::getLongitud)
         ).orElse(null);
-        boolean servidorVacio = Objects.equals(servidorCorrespondiente.getEstado(), Estado.LIBRE.getNombre());
+        boolean servidorVacio = Objects.equals(servidorCorrespondiente.getEstado(), Estado.LIBRE);
 
         Paciente paciente = new Paciente(evento.getTipoEvento().getTipoAtencion());
         servidorCorrespondiente.añadirCola(paciente);
@@ -193,6 +201,7 @@ public class Controller {
         Evento sigEvento = new Evento(tiempoProximoEvento, evento.getTipoEvento() );
         eventos.add(sigEvento);
 
+        //generar el evento finAtención correspondiente si el Paciente entro en un servidor con cola vacia.
         if(servidorVacio){
             tiempo = 0;
             TipoEvento tipoEventoFinAtencion = null;
@@ -211,13 +220,50 @@ public class Controller {
             }
             tiempoProximoEvento = tiempo + reloj;
 
-            sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion);
+            sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion, servidorCorrespondiente);
             eventos.add(sigEvento);
-
-            actualizarTiemposEspera();
         }
+        actualizarTiemposEspera();
+    }
 
+    private void resolverFinAtencion(Evento evento){
+        Servidor servidorFinalizacion = evento.getServidor();
+        double randomRecepcion = generadorLlegadaRecepcion.getValor();
+        boolean continuarAtencion;
+        if (randomRecepcion < 20){
+            continuarAtencion = true;
+        }else{
+            continuarAtencion = false;
+        }
+        if(servidorFinalizacion.esTipoAtencion(TipoAtencion.Recepcion)){
+            continuarAtencion = false;
+        }
+        servidorFinalizacion.finalizarAtencion( continuarAtencion );
 
+        boolean servidorVacio = Objects.equals(servidorFinalizacion.getEstado(), Estado.LIBRE);
+
+        if(servidorVacio){
+            double tiempo = 0;
+            TipoEvento tipoEventoFinAtencion = null;
+            if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.General){
+                tiempo = generadorFinAtencionGeneral.getValor();
+                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_GENERAL;
+            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Emergencia){
+                tiempo = generadorFinAtencionEmergencia.getValor();
+                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_EMERGENCIA;
+            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Especialista){
+                tiempo = generadorFinAtencionEspecialista.getValor();
+                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_ESPECIALIDAD;
+            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Terapia){
+                tiempo = generadorFinAtencionTerapia.getValor();
+                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_TERAPIA;
+            }
+            double tiempoProximoEvento = tiempo + reloj;
+
+            Evento sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion, servidorFinalizacion);
+            eventos.add(sigEvento);
+        }
+        actualizarTiemposEspera();
     }
 
     private void actualizarTiemposEspera(){

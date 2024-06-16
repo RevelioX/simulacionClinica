@@ -41,8 +41,8 @@ public class Servidor {
     }
   }
 
-  public String getEstado(){
-    return estado.getNombre();
+  public Estado getEstado(){
+    return estado;
   }
 
   public void añadirCola(Paciente paciente){
