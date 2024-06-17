@@ -16,9 +16,14 @@ public class Servidor {
     this.tipoAtencion = tipoAtencion;
   }
 
+  public void setEstado(Estado e){
+    this.estado = e;
+  }
+
   public Paciente finalizarAtencion (Boolean b){
     if (b) {
       if (!cola.isEmpty()) {
+        this.setEstado(Estado.OCUPADO);
         Paciente ultimo = cola.get(0);
         ultimo.setTipoAtencion(TipoAtencion.Recepcion);
         ultimo.setEstado(Estado.SIENDO_ATENDIDO_RECEPCION);
@@ -27,15 +32,23 @@ public class Servidor {
         if (!cola.isEmpty()) {
           Paciente siguiente = cola.get(0);
           siguiente.setEstado(Estado.SIENDO_ATENDIDO_RECEPCION);
+        } else {
+          this.setEstado(Estado.LIBRE);
         }
         return ultimo;
       } else {
+        this.setEstado(Estado.LIBRE);
         return null;
       }
     } else {
       if (!cola.isEmpty()) {
         Paciente eliminado = cola.remove(0);
         eliminado = null;
+        if (cola.isEmpty()) {
+          this.setEstado(Estado.LIBRE);
+        }
+      } else {
+        this.setEstado(Estado.LIBRE);
       }
       return null;
     }
