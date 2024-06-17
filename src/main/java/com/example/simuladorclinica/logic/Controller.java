@@ -15,30 +15,31 @@ public class Controller {
     private PriorityQueue<Evento> eventos;
     private double reloj;
     private double tiempoDesdeAnteriorEvento;
-    List<Servidor> servidores;
+    List<Servidor> servidores = new ArrayList<>();
     private Generador generadorLlegadasGeneral;
     private Generador generadorLlegadasEmergencia;
     private Generador generadorLlegadasEspecialista;
     private Generador generadorLlegadaTerapia;
+    private Generador generadorLlegadaRecepcion;
     private Generador generadorFinAtencionGeneral;
     private Generador generadorFinAtencionEmergencia;
     private Generador generadorFinAtencionEspecialista;
     private Generador generadorFinAtencionTerapia;
+    private Generador generadorFinAtencionRecepcion;
 
-    private Generador generadorLlegadaRecepcion;
     private int lineasSimular;
 
     private int desdeDondeMostrar;
 
     boolean seDebeMostrar;
 
-    public void prepararSimulacion(int lineasSimular, int desdeDondeMostrar, double mediaLlegadaGeneral, double mediaLlegadaEmergencia, double mediaLlegadaEspecialista, double mediaLlegadaTerapia, double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia){
+    public void prepararSimulacion(int lineasSimular, int desdeDondeMostrar, double mediaLlegadaGeneral, double mediaLlegadaEmergencia, double mediaLlegadaEspecialista, double mediaLlegadaTerapia, double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia, double mediaAtencionRecepcion){
         this.desdeDondeMostrar = desdeDondeMostrar;
         this.lineasSimular = lineasSimular;
 
         prepararColaEventos();
         instanciarGeneradoresLlegadas(mediaLlegadaGeneral, mediaLlegadaEmergencia,mediaLlegadaEspecialista, mediaLlegadaTerapia);
-        instanciarGeneradoresAtencion(mediaAtencionGeneral, mediaAtencionEmergencia,mediaAtencionEspecialidad,mediaAtencionTerapia);
+        instanciarGeneradoresAtencion(mediaAtencionGeneral, mediaAtencionEmergencia,mediaAtencionEspecialidad,mediaAtencionTerapia, mediaAtencionRecepcion);
         instanciarServidores();
         generarPrimerosEventos();
     }
@@ -64,9 +65,10 @@ public class Controller {
 
         generadorLlegadaRecepcion = new GeneradorNumerosUniformes(0,1);
         generadorLlegadaRecepcion.generarValor(1000);
+
     }
 
-    private void instanciarGeneradoresAtencion(double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia){
+    private void instanciarGeneradoresAtencion(double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia, double mediaAtencionRecepcion){
         generadorFinAtencionGeneral = new GeneradorNumerosExponencial(mediaAtencionGeneral);
         generadorFinAtencionGeneral.generarValor(1000);
 
@@ -78,6 +80,9 @@ public class Controller {
 
         generadorFinAtencionTerapia = new GeneradorNumerosExponencial(mediaAtencionTerapia);
         generadorFinAtencionTerapia.generarValor(1000);
+
+        generadorFinAtencionRecepcion = new GeneradorNumerosExponencial(mediaAtencionRecepcion);
+        generadorFinAtencionRecepcion.generarValor(1000);
 
     }
 
@@ -112,6 +117,9 @@ public class Controller {
         servidores.add(terapia1);
         servidores.add(terapia2);
 
+        Servidor recepcion = new Servidor(TipoAtencion.Recepcion);
+        servidores.add(recepcion);
+
 
     }
     private void generarPrimerosEventos(){
@@ -137,6 +145,7 @@ public class Controller {
         for(int i = 0; i < lineasSimular; i++){
             if (i > desdeDondeMostrar && i < desdeDondeMostrar + 300){
                 seDebeMostrar = true;
+                vectorEstado = new VectorEstado();
             }else{
                 seDebeMostrar = false;
             }
@@ -144,13 +153,17 @@ public class Controller {
             tiempoDesdeAnteriorEvento = reloj - eventoAResolver.getTiempo();
             reloj = eventoAResolver.getTiempo();
             resolverEvento(eventoAResolver);
-            //todo - Falta por añadir logica
+            if (seDebeMostrar) {
+                armarVector();
+            }
+
 
         }
 
     }
 
     private void resolverEvento(Evento evento){
+        System.out.println(evento.toString());
         TipoEvento tipoEvento = evento.getTipoEvento();
 
         if(seDebeMostrar){
@@ -160,11 +173,11 @@ public class Controller {
 
         if(tipoEvento.esDeLlegada()){
             resolverEventoLlegada(evento);
-        } else if(tipoEvento.esDeFinAtenciónNormal()){
+        } else if(tipoEvento.esDeFinAtencion()){
             resolverFinAtencion(evento);
-        }else if(tipoEvento.esDeRecepcion()){
-            resolverFinAtencionRecepcion(evento);
-        }
+        }//else if(tipoEvento.esDeRecepcion()){
+         //   resolverFinAtencionRecepcion(evento);
+        //}
     }
 
     private void resolverEventoLlegada(Evento evento){
@@ -179,7 +192,7 @@ public class Controller {
         Servidor servidorCorrespondiente = serviroresTipoCorrespondiente.stream().min(
             Comparator.comparing(Servidor::getLongitud)
         ).orElse(null);
-        boolean servidorVacio = Objects.equals(servidorCorrespondiente.getEstado(), Estado.LIBRE);
+        boolean servidorVacio = servidorCorrespondiente.getEstado() == Estado.LIBRE;
 
         Paciente paciente = new Paciente(evento.getTipoEvento().getTipoAtencion());
         servidorCorrespondiente.añadirCola(paciente);
@@ -230,7 +243,7 @@ public class Controller {
         Servidor servidorFinalizacion = evento.getServidor();
         double randomRecepcion = generadorLlegadaRecepcion.getValor();
         boolean continuarAtencion;
-        if (randomRecepcion < 20){
+        if (randomRecepcion < 0.25){
             continuarAtencion = true;
         }else{
             continuarAtencion = false;
@@ -238,11 +251,12 @@ public class Controller {
         if(servidorFinalizacion.esTipoAtencion(TipoAtencion.Recepcion)){
             continuarAtencion = false;
         }
-        servidorFinalizacion.finalizarAtencion( continuarAtencion );
 
-        boolean servidorVacio = Objects.equals(servidorFinalizacion.getEstado(), Estado.LIBRE);
+        Paciente pacienteQueTermino = servidorFinalizacion.finalizarAtencion( continuarAtencion );
 
-        if(servidorVacio){
+        boolean servidorVacio = servidorFinalizacion.getEstado() == Estado.LIBRE;
+
+        if(!servidorVacio){
             double tiempo = 0;
             TipoEvento tipoEventoFinAtencion = null;
             if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.General){
@@ -257,11 +271,38 @@ public class Controller {
             } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Terapia){
                 tiempo = generadorFinAtencionTerapia.getValor();
                 tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_TERAPIA;
+            } else if (evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Recepcion){
+                tiempo = generadorFinAtencionRecepcion.getValor();
+                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_RECEPCION;
             }
             double tiempoProximoEvento = tiempo + reloj;
 
             Evento sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion, servidorFinalizacion);
             eventos.add(sigEvento);
+        }
+        double valorRND = generadorFinAtencionRecepcion.getValor();
+        if(evento.getTipoEvento() != TipoEvento.FIN_ATENCION_RECEPCION && continuarAtencion){
+            List<Servidor> serviroresTipoCorrespondiente = servidores.stream().filter(
+                    servidor -> {
+                        boolean b = servidor.getTipoAtencion() == TipoAtencion.Recepcion;
+                        return b;
+                    }
+            ).collect(Collectors.toList());
+
+            Servidor servidorCorrespondiente = serviroresTipoCorrespondiente.stream().min(
+                    Comparator.comparing(Servidor::getLongitud)
+            ).orElse(null);
+            Estado estadoDelServidor = servidorCorrespondiente.getEstado();
+            servidorCorrespondiente.añadirCola(pacienteQueTermino);
+
+            if(estadoDelServidor == Estado.LIBRE){
+                double tiempo = generadorFinAtencionRecepcion.getValor();
+                double tiempoProximoEvento = tiempo + reloj;
+
+                Evento sigEvento = new Evento(tiempoProximoEvento, TipoEvento.FIN_ATENCION_RECEPCION, servidorCorrespondiente);
+                eventos.add(sigEvento);
+            }
+
         }
         actualizarTiemposEspera();
     }
@@ -270,6 +311,38 @@ public class Controller {
         servidores.stream().forEach(
                 servidor -> { servidor.actualizarTiempoEsperaPacientes(tiempoDesdeAnteriorEvento); }
         );
+    }
+
+    private void armarVector(){
+        double proxLlegadaGeneral = 0;
+        double proxLlegadaEmergencia = 0;
+        double proxLlegadaTerapia = 0;
+        double proxLlegadaEspecialidad = 0;
+
+        for (Evento evento : eventos) {
+            TipoEvento tipo = evento.getTipoEvento();
+
+            switch (tipo) {
+                case LLEGADA_PACIENTE_GENERAL:
+                    proxLlegadaGeneral = evento.getTiempo();
+                    break;
+                case LLEGADA_PACIENTE_EMERGENCIA:
+                    proxLlegadaEmergencia = evento.getTiempo();
+                    break;
+                case LLEGADA_PACIENTE_TERAPIA:
+                    proxLlegadaTerapia = evento.getTiempo();
+                    break;
+                case LLEGADA_PACIENTE_ESPECIALIDAD:
+                    proxLlegadaEspecialidad = evento.getTiempo();
+                    break;
+            }
+        }
+
+        vectorEstado.setLlegadaGeneral_ProximaLLegada(String.valueOf(proxLlegadaGeneral));
+        vectorEstado.setLlegadaEmergencia_ProximaLlegada(String.valueOf(proxLlegadaEmergencia));
+        vectorEstado.setLlegadaTerapia_ProximaLlegada(String.valueOf(proxLlegadaTerapia));
+        vectorEstado.setLlegadaEspecialista_ProximaLlegada(String.valueOf(proxLlegadaEspecialidad));
+        //System.out.println(vectorEstado.toString());
     }
 
 }

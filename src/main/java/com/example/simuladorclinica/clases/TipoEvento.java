@@ -50,6 +50,15 @@ public enum TipoEvento {
             tipoEvento == FIN_ATENCION_TERAPIA);
   }
 
+  public boolean esDeFinAtencion(){
+    TipoEvento tipoEvento = this;
+    return (tipoEvento == FIN_ATENCION_EMERGENCIA ||
+            tipoEvento == FIN_ATENCION_ESPECIALIDAD ||
+            tipoEvento == FIN_ATENCION_GENERAL ||
+            tipoEvento == FIN_ATENCION_TERAPIA ||
+            tipoEvento == FIN_ATENCION_RECEPCION);
+  }
+
   public boolean esDeRecepcion(){
     TipoEvento tipoEvento = this;
     return tipoEvento == FIN_ATENCION_RECEPCION;

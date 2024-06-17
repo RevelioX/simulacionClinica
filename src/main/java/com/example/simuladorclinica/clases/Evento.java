@@ -12,6 +12,15 @@ public class Evento {
     return servidor;
   }
 
+  @Override
+  public String toString() {
+    return "Evento{" +
+            "tiempo=" + tiempo +
+            ", tipoEvento=" + tipoEvento +
+            ", servidor=" + servidor +
+            '}';
+  }
+
   public Evento(double tiempo, TipoEvento tipoEvento) {
     this.tiempo = tiempo;
     this.tipoEvento = tipoEvento;

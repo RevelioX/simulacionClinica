@@ -68,6 +68,10 @@ public class VectorEstado {
     String Estado_Recepcion;
     String Cola_Recepcion;
 
+    public VectorEstado(){
+
+    }
+
     public String getEvento() {
         return evento;
     }
@@ -386,6 +390,55 @@ public class VectorEstado {
 
     public void setEstado_Medico_Fisico_2(String estado_Medico_Fisico_2) {
         Estado_Medico_Fisico_2 = estado_Medico_Fisico_2;
+    }
+
+    @Override
+    public String toString() {
+        return "VectorEstado{" +
+                "evento='" + evento + '\'' +
+                ", reloj='" + reloj + '\'' +
+                ", LlegadaGeneral_ProximaLLegada='" + LlegadaGeneral_ProximaLLegada + '\'' +
+                ", LlegadaEmergencia_ProximaLlegada='" + LlegadaEmergencia_ProximaLlegada + '\'' +
+                ", LlegadaEspecialista_ProximaLlegada='" + LlegadaEspecialista_ProximaLlegada + '\'' +
+                ", LlegadaTerapia_ProximaLlegada='" + LlegadaTerapia_ProximaLlegada + '\'' +
+                ", Estado_Espera_Paciente=" + Estado_Espera_Paciente +
+                ", Fin_Atencion_General_1_TiempoFin='" + Fin_Atencion_General_1_TiempoFin + '\'' +
+                ", Fin_Atencion_General_2_TiempoFin='" + Fin_Atencion_General_2_TiempoFin + '\'' +
+                ", Fin_Atencion_General_3_TiempoFin='" + Fin_Atencion_General_3_TiempoFin + '\'' +
+                ", Fin_Atencion_Emergencia_1_TiempoFin='" + Fin_Atencion_Emergencia_1_TiempoFin + '\'' +
+                ", Fin_Atencion_Emergencia_2_TiempoFin='" + Fin_Atencion_Emergencia_2_TiempoFin + '\'' +
+                ", Fin_Atencion_Especialista_1_TiempoFin='" + Fin_Atencion_Especialista_1_TiempoFin + '\'' +
+                ", Fin_Atencion_Especialista_2_TiempoFin='" + Fin_Atencion_Especialista_2_TiempoFin + '\'' +
+                ", Fin_Atencion_Especialista_3_TiempoFin='" + Fin_Atencion_Especialista_3_TiempoFin + '\'' +
+                ", Fin_Atencion_Especialista_4_TiempoFin='" + Fin_Atencion_Especialista_4_TiempoFin + '\'' +
+                ", Fin_Atencion_Terapia_Fisica_1_TiempoFin='" + Fin_Atencion_Terapia_Fisica_1_TiempoFin + '\'' +
+                ", Fin_Atencion_Terapia_Fisica_2_TiempoFin='" + Fin_Atencion_Terapia_Fisica_2_TiempoFin + '\'' +
+                ", Resultado_Recepcion='" + Resultado_Recepcion + '\'' +
+                ", Estado_Medico_General_1='" + Estado_Medico_General_1 + '\'' +
+                ", Cola_Medico_General_1='" + Cola_Medico_General_1 + '\'' +
+                ", Estado_Medico_General_2='" + Estado_Medico_General_2 + '\'' +
+                ", Cola_Medico_General_2='" + Cola_Medico_General_2 + '\'' +
+                ", Estado_Medico_General_3='" + Estado_Medico_General_3 + '\'' +
+                ", Cola_Medico_General_3='" + Cola_Medico_General_3 + '\'' +
+                ", Estado_Medico_Emergencia_1='" + Estado_Medico_Emergencia_1 + '\'' +
+                ", Cola_Medico_Emergencia_1='" + Cola_Medico_Emergencia_1 + '\'' +
+                ", Estado_Medico_Emergencia_2='" + Estado_Medico_Emergencia_2 + '\'' +
+                ", Cola_Medico_Emergencia_2='" + Cola_Medico_Emergencia_2 + '\'' +
+                ", Estado_Medico_Especialista_1='" + Estado_Medico_Especialista_1 + '\'' +
+                ", Cola_Medico_Especialista_1='" + Cola_Medico_Especialista_1 + '\'' +
+                ", Estado_Medico_Especialista_2='" + Estado_Medico_Especialista_2 + '\'' +
+                ", Cola_Medico_Especialista_2='" + Cola_Medico_Especialista_2 + '\'' +
+                ", Estado_Medico_Especialista_3='" + Estado_Medico_Especialista_3 + '\'' +
+                ", Cola_Medico_Especialista_3='" + Cola_Medico_Especialista_3 + '\'' +
+                ", Estado_Medico_Especialista_4='" + Estado_Medico_Especialista_4 + '\'' +
+                ", Cola_Medico_Especialista_4='" + Cola_Medico_Especialista_4 + '\'' +
+                ", Estado_Medico_Fisico_1='" + Estado_Medico_Fisico_1 + '\'' +
+                ", Cola_Medico_Fisico_1='" + Cola_Medico_Fisico_1 + '\'' +
+                ", Estado_Medico_Fisico_2='" + Estado_Medico_Fisico_2 + '\'' +
+                ", Cola_Medico_Fisico_2='" + Cola_Medico_Fisico_2 + '\'' +
+                ", Estado_Recepcion='" + Estado_Recepcion + '\'' +
+                ", Cola_Recepcion='" + Cola_Recepcion + '\'' +
+                '}';
     }
 
     public String getCola_Medico_Fisico_2() {

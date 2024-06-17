@@ -16,28 +16,28 @@ public class Servidor {
     this.tipoAtencion = tipoAtencion;
   }
 
-  public Paciente finalizarAtencion (Boolean b){
-    if (b) {
-      if (!cola.isEmpty()) {
-        Paciente ultimo = cola.get(0);
-        ultimo.setTipoAtencion(TipoAtencion.Recepcion);
-        ultimo.setEstado(Estado.SIENDO_ATENDIDO_RECEPCION);
-        cola.remove(0);
-
-        if (!cola.isEmpty()) {
-          Paciente siguiente = cola.get(0);
-          siguiente.setEstado(Estado.SIENDO_ATENDIDO_RECEPCION);
-        }
-        return ultimo;
-      } else {
-        return null;
-      }
-    } else {
-      if (!cola.isEmpty()) {
-        Paciente eliminado = cola.remove(0);
-        eliminado = null;
-      }
+  public Paciente finalizarAtencion(Boolean continuaAtencion) {
+    System.out.println(tipoAtencion.toString() + " - " + cola.size());
+    if (cola.isEmpty()) {
+      estado = Estado.LIBRE;
       return null;
+    }
+
+    Paciente atendido = cola.remove(0);
+    if (continuaAtencion) {
+      atendido.setTipoAtencion(TipoAtencion.Recepcion);
+      atendido.setEstado(Estado.SIENDO_ATENDIDO_RECEPCION);
+
+      if (!cola.isEmpty()) {
+        Paciente siguiente = cola.get(0);
+        siguiente.setEstado(Estado.SIENDO_ATENDIDO);
+      } else {
+        estado = Estado.LIBRE;
+      }
+
+      return atendido;
+    } else {
+      return atendido;
     }
   }
 
@@ -46,17 +46,29 @@ public class Servidor {
   }
 
   public void añadirCola(Paciente paciente){
+    estado = Estado.OCUPADO;
+
     if (cola.isEmpty()){
       paciente.setEstado(Estado.SIENDO_ATENDIDO);
-    }else cola.add(paciente);
+    }else{
+      paciente.setEstado(Estado.ESPERANDO_ATENCION);
+    }
+    cola.add(paciente);
   }
 
   public int getLongitud(){
     return cola.size() - 1;
   }
 
-  public void actualizarTiempoEsperaPacientes (Double d){
+  public void actualizarTiempoEsperaPacientes (Double tiempo){
+    if (cola == null || cola.isEmpty()) {
+      return; // No hay pacientes en la cola
+    }
 
+    for (int i = 1; i < cola.size(); i++) {
+      Paciente paciente = cola.get(i);
+      paciente.aumentarTiempoEspera(tiempo);
+    }
   }
 
   public TipoAtencion getTipoAtencion(){

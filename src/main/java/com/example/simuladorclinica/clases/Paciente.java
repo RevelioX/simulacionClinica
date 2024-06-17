@@ -19,7 +19,7 @@ public class Paciente {
     }
 
     public void setEstado(Estado e){
-      estado.setNombre(e.getNombre());
+      estado = e;
     }
 
     public void setTipoAtencion(TipoAtencion atencion){
