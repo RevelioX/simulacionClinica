@@ -10,6 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class VectorEstado {
@@ -19,7 +20,7 @@ public class VectorEstado {
     String LlegadaEmergencia_ProximaLlegada;
     String LlegadaEspecialista_ProximaLlegada;
     String LlegadaTerapia_ProximaLlegada;
-    List<String> Estado_Espera_Paciente; // Estado - Espera - TipoAtencion En ese orden
+    List<String> Estado_Espera_Paciente = new ArrayList<>(); // Estado - Espera - TipoAtencion En ese orden
     //-----------------------------------------------//
     String Fin_Atencion_General_1_TiempoFin;
     String Fin_Atencion_General_2_TiempoFin;
@@ -35,7 +36,17 @@ public class VectorEstado {
     //--------------------------------------------//
     String Fin_Atencion_Terapia_Fisica_1_TiempoFin;
     String Fin_Atencion_Terapia_Fisica_2_TiempoFin;
+
+    public String getFin_Atencion_Recepcion_1_TiempoFin() {
+        return Fin_Atencion_Recepcion_1_TiempoFinString;
+    }
+
+    public void setFin_Atencion_Recepcion_1_TiempoFin(String fin_Atencion_Recepcion_1_TiempoFinString) {
+        Fin_Atencion_Recepcion_1_TiempoFinString = fin_Atencion_Recepcion_1_TiempoFinString;
+    }
+
     //--------------------------------------------//
+    String Fin_Atencion_Recepcion_1_TiempoFinString;
     String Resultado_Recepcion;
     //--------------------------------------------//
     String Estado_Medico_General_1;
@@ -67,6 +78,22 @@ public class VectorEstado {
     //--------------------------------------------//
     String Estado_Recepcion;
     String Cola_Recepcion;
+
+    public String getEstado_Recepcion() {
+        return Estado_Recepcion;
+    }
+
+    public void setEstado_Recepcion(String estado_Recepcion) {
+        Estado_Recepcion = estado_Recepcion;
+    }
+
+    public String getCola_Recepcion() {
+        return Cola_Recepcion;
+    }
+
+    public void setCola_Recepcion(String cola_Recepcion) {
+        Cola_Recepcion = cola_Recepcion;
+    }
 
     public VectorEstado(){
 
@@ -126,6 +153,12 @@ public class VectorEstado {
 
     public void setEstado_Espera_Paciente(List<String> estado_Espera_Paciente) {
         Estado_Espera_Paciente = estado_Espera_Paciente;
+    }
+
+    public void addEstado_Espera_Paciente(String estado, String espera, String paciente){
+        Estado_Espera_Paciente.add(estado);
+        Estado_Espera_Paciente.add(espera);
+        Estado_Espera_Paciente.add(paciente);
     }
 
     public String getFin_Atencion_General_1_TiempoFin() {

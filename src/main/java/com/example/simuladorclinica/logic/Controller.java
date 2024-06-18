@@ -87,37 +87,37 @@ public class Controller {
     }
 
     private void instanciarServidores(){
-        Servidor general1 = new Servidor(TipoAtencion.General);
-        Servidor general2 = new Servidor(TipoAtencion.General);
-        Servidor general3 = new Servidor(TipoAtencion.General);
+        Servidor general1 = new Servidor(TipoAtencion.General,1);
+        Servidor general2 = new Servidor(TipoAtencion.General,2);
+        Servidor general3 = new Servidor(TipoAtencion.General,3);
 
         servidores.add(general1);
         servidores.add(general2);
         servidores.add(general3);
 
-        Servidor emergencias1 = new Servidor(TipoAtencion.Emergencia);
-        Servidor emergencias2 = new Servidor(TipoAtencion.Emergencia);
+        Servidor emergencias1 = new Servidor(TipoAtencion.Emergencia,1);
+        Servidor emergencias2 = new Servidor(TipoAtencion.Emergencia,2);
 
         servidores.add(emergencias1);
         servidores.add(emergencias2);
 
-        Servidor especialista1 = new Servidor(TipoAtencion.Especialista);
-        Servidor especialista2 = new Servidor(TipoAtencion.Especialista);
-        Servidor especialista3 = new Servidor(TipoAtencion.Especialista);
-        Servidor especialista4 = new Servidor(TipoAtencion.Especialista);
+        Servidor especialista1 = new Servidor(TipoAtencion.Especialista,1);
+        Servidor especialista2 = new Servidor(TipoAtencion.Especialista,2);
+        Servidor especialista3 = new Servidor(TipoAtencion.Especialista,3);
+        Servidor especialista4 = new Servidor(TipoAtencion.Especialista,4);
 
         servidores.add(especialista1);
         servidores.add(especialista2);
         servidores.add(especialista3);
         servidores.add(especialista4);
 
-        Servidor terapia1 = new Servidor(TipoAtencion.Terapia);
-        Servidor terapia2 = new Servidor(TipoAtencion.Terapia);
+        Servidor terapia1 = new Servidor(TipoAtencion.Terapia,1);
+        Servidor terapia2 = new Servidor(TipoAtencion.Terapia,2);
 
         servidores.add(terapia1);
         servidores.add(terapia2);
 
-        Servidor recepcion = new Servidor(TipoAtencion.Recepcion);
+        Servidor recepcion = new Servidor(TipoAtencion.Recepcion,1);
         servidores.add(recepcion);
 
 
@@ -163,7 +163,8 @@ public class Controller {
     }
 
     private void resolverEvento(Evento evento){
-        System.out.println(evento.toString());
+
+        //System.out.println("------------" + evento.getTipoEvento().getNombre() + "------------" + reloj );
         TipoEvento tipoEvento = evento.getTipoEvento();
 
         if(seDebeMostrar){
@@ -189,10 +190,11 @@ public class Controller {
                 }
         ).collect(Collectors.toList());
 
+
         Servidor servidorCorrespondiente = serviroresTipoCorrespondiente.stream().min(
             Comparator.comparing(Servidor::getLongitud)
         ).orElse(null);
-        boolean servidorVacio = servidorCorrespondiente.getEstado() == Estado.LIBRE;
+        boolean servidorVacio = servidorCorrespondiente.getLongitud() == -1;
 
         Paciente paciente = new Paciente(evento.getTipoEvento().getTipoAtencion());
         servidorCorrespondiente.añadirCola(paciente);
@@ -241,6 +243,8 @@ public class Controller {
 
     private void resolverFinAtencion(Evento evento){
         Servidor servidorFinalizacion = evento.getServidor();
+        ;
+
         double randomRecepcion = generadorLlegadaRecepcion.getValor();
         boolean continuarAtencion;
         if (randomRecepcion < 0.25){
@@ -248,13 +252,15 @@ public class Controller {
         }else{
             continuarAtencion = false;
         }
-        if(servidorFinalizacion.esTipoAtencion(TipoAtencion.Recepcion)){
+        if(servidorFinalizacion.getTipoAtencion() == TipoAtencion.Recepcion){
             continuarAtencion = false;
         }
 
-        Paciente pacienteQueTermino = servidorFinalizacion.finalizarAtencion( continuarAtencion );
 
-        boolean servidorVacio = servidorFinalizacion.getEstado() == Estado.LIBRE;
+        Paciente pacienteQueTermino = servidorFinalizacion.finalizarAtencion( continuarAtencion );
+        //System.out.println("Evento. paso : " +  evento.getServidor().toString());
+        boolean servidorVacio = servidorFinalizacion.getLongitud() == -1;
+
 
         if(!servidorVacio){
             double tiempo = 0;
@@ -276,11 +282,10 @@ public class Controller {
                 tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_RECEPCION;
             }
             double tiempoProximoEvento = tiempo + reloj;
-
-            Evento sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion, servidorFinalizacion);
+            Evento sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion, evento.getServidor());
             eventos.add(sigEvento);
         }
-        double valorRND = generadorFinAtencionRecepcion.getValor();
+
         if(evento.getTipoEvento() != TipoEvento.FIN_ATENCION_RECEPCION && continuarAtencion){
             List<Servidor> serviroresTipoCorrespondiente = servidores.stream().filter(
                     servidor -> {
@@ -342,7 +347,102 @@ public class Controller {
         vectorEstado.setLlegadaEmergencia_ProximaLlegada(String.valueOf(proxLlegadaEmergencia));
         vectorEstado.setLlegadaTerapia_ProximaLlegada(String.valueOf(proxLlegadaTerapia));
         vectorEstado.setLlegadaEspecialista_ProximaLlegada(String.valueOf(proxLlegadaEspecialidad));
-        //System.out.println(vectorEstado.toString());
+
+        for (Servidor servidor : servidores) {
+            for (Paciente paciente : servidor.getCola()) {
+                vectorEstado.addEstado_Espera_Paciente(paciente.getEstado(), String.valueOf(paciente.getTiempoEspera()), paciente.getTipoAtencion().toString());
+            }
+
+            if (servidor.getTipoAtencion() == TipoAtencion.General) {
+                if (servidor.getId() == 1) {
+                    vectorEstado.setCola_Medico_General_1(String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstado_Medico_General_1(servidor.getEstado().toString());
+                }
+                if (servidor.getId() == 2) {
+                    vectorEstado.setCola_Medico_General_2(String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstado_Medico_General_2(servidor.getEstado().toString());
+                }
+                if (servidor.getId() == 3) {
+                    vectorEstado.setCola_Medico_General_3(String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstado_Medico_General_3(servidor.getEstado().toString());
+                }
+            }
+
+            if (servidor.getTipoAtencion() == TipoAtencion.Emergencia) {
+                if (servidor.getId() == 1) {
+                    vectorEstado.setCola_Medico_Emergencia_1(String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstado_Medico_Emergencia_1(servidor.getEstado().toString());
+                }
+                if (servidor.getId() == 2) {
+                    vectorEstado.setCola_Medico_Emergencia_2(String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstado_Medico_Emergencia_2(servidor.getEstado().toString());
+                }
+            }
+
+            if (servidor.getTipoAtencion() == TipoAtencion.Especialista) {
+                if (servidor.getId() == 1) {
+                    vectorEstado.setCola_Medico_Especialista_1(String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstado_Medico_Especialista_1(servidor.getEstado().toString());
+                }
+                if (servidor.getId() == 2) {
+                    vectorEstado.setCola_Medico_Especialista_2(String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstado_Medico_Especialista_2(servidor.getEstado().toString());
+                }
+                if (servidor.getId() == 3) {
+                    vectorEstado.setCola_Medico_Especialista_3(String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstado_Medico_Especialista_3(servidor.getEstado().toString());
+                }
+                if (servidor.getId() == 4) {
+                    vectorEstado.setCola_Medico_Especialista_4(String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstado_Medico_Especialista_4(servidor.getEstado().toString());
+                }
+            }
+
+            if (servidor.getTipoAtencion() == TipoAtencion.Terapia) {
+                if (servidor.getId() == 1) {
+                    vectorEstado.setCola_Medico_Fisico_1(String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstado_Medico_Fisico_1(servidor.getEstado().toString());
+                }
+                if (servidor.getId() == 2) {
+                    vectorEstado.setCola_Medico_Fisico_2(String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstado_Medico_Fisico_2(servidor.getEstado().toString());
+                }
+            }
+
+            if (servidor.getTipoAtencion() == TipoAtencion.Recepcion) {
+                if (servidor.getId() == 1) {
+                    vectorEstado.setCola_Recepcion(String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstado_Recepcion(servidor.getEstado().toString());
+                }
+            }
+        }
+
+
+        for (Evento evento : eventos) {
+            if (evento.getTipoEvento() == TipoEvento.FIN_ATENCION_GENERAL) {
+                if (evento.getServidor().getId() == 1) vectorEstado.setFin_Atencion_General_1_TiempoFin(String.valueOf(evento.getTiempo()));
+                if (evento.getServidor().getId() == 2) vectorEstado.setFin_Atencion_General_2_TiempoFin(String.valueOf(evento.getTiempo()));
+                if (evento.getServidor().getId() == 3) vectorEstado.setFin_Atencion_General_3_TiempoFin(String.valueOf(evento.getTiempo()));
+            }
+            if (evento.getTipoEvento() == TipoEvento.FIN_ATENCION_EMERGENCIA) {
+                if (evento.getServidor().getId() == 1) vectorEstado.setFin_Atencion_Emergencia_1_TiempoFin(String.valueOf(evento.getTiempo()));
+                if (evento.getServidor().getId() == 2) vectorEstado.setFin_Atencion_Emergencia_2_TiempoFin(String.valueOf(evento.getTiempo()));
+            }
+            if (evento.getTipoEvento() == TipoEvento.FIN_ATENCION_ESPECIALIDAD) {
+                if (evento.getServidor().getId() == 1) vectorEstado.setFin_Atencion_Especialista_1_TiempoFin(String.valueOf(evento.getTiempo()));
+                if (evento.getServidor().getId() == 2) vectorEstado.setFin_Atencion_Especialista_2_TiempoFin(String.valueOf(evento.getTiempo()));
+                if (evento.getServidor().getId() == 3) vectorEstado.setFin_Atencion_Especialista_3_TiempoFin(String.valueOf(evento.getTiempo()));
+                if (evento.getServidor().getId() == 4) vectorEstado.setFin_Atencion_Especialista_4_TiempoFin(String.valueOf(evento.getTiempo()));
+            }
+            if (evento.getTipoEvento() == TipoEvento.FIN_ATENCION_TERAPIA) {
+                if (evento.getServidor().getId() == 1) vectorEstado.setFin_Atencion_Terapia_Fisica_1_TiempoFin(String.valueOf(evento.getTiempo()));
+                if (evento.getServidor().getId() == 2) vectorEstado.setFin_Atencion_Terapia_Fisica_2_TiempoFin(String.valueOf(evento.getTiempo()));
+            }
+            if (evento.getTipoEvento() == TipoEvento.FIN_ATENCION_RECEPCION) {
+                if (evento.getServidor().getId() == 1) vectorEstado.setFin_Atencion_Recepcion_1_TiempoFin(String.valueOf(evento.getTiempo()));
+            }
+        }
+        System.out.println(vectorEstado.toString());
     }
 
 }

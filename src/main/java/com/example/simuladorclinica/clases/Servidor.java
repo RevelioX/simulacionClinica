@@ -5,19 +5,32 @@ import java.util.List;
 
 public class Servidor {
 
+  private int id;
+
   private List<Paciente> cola;
   private Estado estado;
-
   private TipoAtencion tipoAtencion;
 
-  public Servidor( TipoAtencion tipoAtencion) {
+  public Servidor( TipoAtencion tipoAtencion, int id) {
+    this.id = id;
     this.cola = new ArrayList<>();
-    this.estado = Estado.LIBRE; //todo hay que hacer que estados sea un enum. El servidor se crea en estado libre.
+    this.estado = Estado.LIBRE;
     this.tipoAtencion = tipoAtencion;
   }
 
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public List<Paciente> getCola() {
+    return cola;
+  }
+
   public Paciente finalizarAtencion(Boolean continuaAtencion) {
-    System.out.println(tipoAtencion.toString() + " - " + cola.size());
     if (cola.isEmpty()) {
       estado = Estado.LIBRE;
       return null;
@@ -25,8 +38,8 @@ public class Servidor {
 
     Paciente atendido = cola.remove(0);
     if (continuaAtencion) {
-      atendido.setTipoAtencion(TipoAtencion.Recepcion);
-      atendido.setEstado(Estado.SIENDO_ATENDIDO_RECEPCION);
+     // atendido.setTipoAtencion(TipoAtencion.Recepcion);
+     // atendido.setEstado(Estado.ESPERANDO_RECEPCION);
 
       if (!cola.isEmpty()) {
         Paciente siguiente = cola.get(0);
@@ -48,7 +61,7 @@ public class Servidor {
   public void añadirCola(Paciente paciente){
     estado = Estado.OCUPADO;
 
-    if (cola.isEmpty()){
+    if (cola.isEmpty()){ //todo hay q añadir el manejo de los casos q este servidor sea "Recepcion"
       paciente.setEstado(Estado.SIENDO_ATENDIDO);
     }else{
       paciente.setEstado(Estado.ESPERANDO_ATENCION);
@@ -83,12 +96,11 @@ public class Servidor {
     return this.tipoAtencion.equals(t);
   }
 
-
-
-
-
-
-
-
-
+  @Override
+  public String toString() {
+    return "Servidor{" +
+            "estado=" + estado +
+            ", tipoAtencion=" + tipoAtencion.getNombre() +
+            '}';
+  }
 }
