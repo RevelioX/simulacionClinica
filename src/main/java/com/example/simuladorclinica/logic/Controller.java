@@ -354,7 +354,7 @@ public class Controller {
 
         for (Servidor servidor : servidores) {
             for (Paciente paciente : servidor.getCola()) {
-                vectorEstado.addEstado_Espera_Paciente(paciente.getEstado(), String.valueOf(paciente.getTiempoEspera()), paciente.getTipoAtencion().toString());
+                vectorEstado.addEstado_Espera_Paciente(paciente.getEstado(), String.valueOf(paciente.getTiempoEspera()), paciente.getTipoAtencion().getNombre());
             }
 
             if (servidor.getTipoAtencion() == TipoAtencion.General) {
