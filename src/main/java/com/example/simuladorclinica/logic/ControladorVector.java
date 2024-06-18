@@ -19,6 +19,7 @@ public class ControladorVector {
 
   @PostMapping("/simulacion")
   public List<VectorEstado> prepararSimulacion(@RequestBody SimulacionDTO request) {
+    controladorSimulacion.limpiarVector();
     controladorSimulacion.prepararSimulacion(
             request.getLineasSimular(),
             request.getDesdeDondeMostrar(),

@@ -457,4 +457,8 @@ public class Controller {
         return vectorAcumulador;
     }
 
+    public void limpiarVector() {
+        vectorAcumulador.clear();
+
+    }
 }
