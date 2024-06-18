@@ -150,7 +150,7 @@ public class Controller {
                 seDebeMostrar = false;
             }
             Evento eventoAResolver = eventos.remove();
-            tiempoDesdeAnteriorEvento = reloj - eventoAResolver.getTiempo();
+            tiempoDesdeAnteriorEvento = eventoAResolver.getTiempo() - reloj;
             reloj = eventoAResolver.getTiempo();
             resolverEvento(eventoAResolver);
             if (seDebeMostrar) {

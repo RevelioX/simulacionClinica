@@ -9,7 +9,7 @@ public class SimuladorClinicaApplication {
     public static void main(String[] args) {
 
        Controller controller = new Controller();
-       controller.prepararSimulacion(100000,20,8,7,2,
+       controller.prepararSimulacion(100000,20,0.01,7,2,
                2,6,7,9,4,5);
        controller.simular();
     }
