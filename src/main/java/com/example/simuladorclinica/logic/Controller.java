@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+
 public class Controller {
     private VectorEstado vectorEstado;
 
