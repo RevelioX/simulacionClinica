@@ -143,7 +143,7 @@ public class Controller {
     }
     public void simular(){
         for(int i = 0; i < lineasSimular; i++){
-            if (i > desdeDondeMostrar && i < desdeDondeMostrar + 300){
+            if ((i > desdeDondeMostrar && i < desdeDondeMostrar + 300) || i == lineasSimular - 1){
                 seDebeMostrar = true;
                 vectorEstado = new VectorEstado();
             }else{

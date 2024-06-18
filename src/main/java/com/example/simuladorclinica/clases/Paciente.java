@@ -28,7 +28,6 @@ public class Paciente {
 
     public void aumentarTiempoEspera(Double tiempo){
        this.tiempoEspera += tiempo;
-
     }
 
     public TipoAtencion getTipoAtencion() {

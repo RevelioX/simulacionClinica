@@ -50,6 +50,9 @@ public class Servidor {
 
       return atendido;
     } else {
+      if(cola.isEmpty()){
+        estado = Estado.LIBRE;
+      }
       return atendido;
     }
   }
