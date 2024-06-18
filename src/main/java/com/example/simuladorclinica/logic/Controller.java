@@ -6,12 +6,16 @@ import com.example.simuladorclinica.generators.Generador;
 import com.example.simuladorclinica.generators.GeneradorNumerosExponencial;
 import com.example.simuladorclinica.generators.GeneradorNumerosNormales;
 import com.example.simuladorclinica.generators.GeneradorNumerosUniformes;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Component
 public class Controller {
     private VectorEstado vectorEstado;
+
+    private List<VectorEstado> vectorAcumulador = new ArrayList<>();
     private PriorityQueue<Evento> eventos;
     private double reloj;
     private double tiempoDesdeAnteriorEvento;
@@ -442,7 +446,14 @@ public class Controller {
                 if (evento.getServidor().getId() == 1) vectorEstado.setFin_Atencion_Recepcion_1_TiempoFin(String.valueOf(evento.getTiempo()));
             }
         }
-        System.out.println(vectorEstado.toString());
+//        System.out.println(vectorEstado.toString());
+        System.out.println(vectorEstado);
+        vectorAcumulador.add(vectorEstado);
+
+    }
+
+    public List<VectorEstado> getVectorEstadoAcumulado(){
+        return vectorAcumulador;
     }
 
 }
