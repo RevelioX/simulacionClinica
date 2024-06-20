@@ -182,7 +182,7 @@ public class Controller {
         } else if(tipoEvento.esDeFinAtencion()){
             resolverFinAtencion(evento);
         }//else if(tipoEvento.esDeRecepcion()){
-         //   resolverFinAtencionRecepcion(evento);
+        //   resolverFinAtencionRecepcion(evento);
         //}
     }
 
@@ -197,7 +197,7 @@ public class Controller {
 
 
         Servidor servidorCorrespondiente = serviroresTipoCorrespondiente.stream().min(
-            Comparator.comparing(Servidor::getLongitud)
+                Comparator.comparing(Servidor::getLongitud)
         ).orElse(null);
         boolean servidorVacio = servidorCorrespondiente.getLongitud() == -1;
 

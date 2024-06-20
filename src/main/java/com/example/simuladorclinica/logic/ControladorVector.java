@@ -19,6 +19,8 @@ public class ControladorVector {
 
   @PostMapping("/simulacion")
   public List<VectorEstado> prepararSimulacion(@RequestBody SimulacionDTO request) {
+    System.out.println(request.getLineasSimular());
+    System.out.println(request.getDesdeDondeMostrar());
     controladorSimulacion.limpiarVector();
     controladorSimulacion.prepararSimulacion(
             request.getLineasSimular(),
@@ -33,6 +35,8 @@ public class ControladorVector {
             request.getMediaAtencionTerapia(),
             request.getMediaAtencionRecepcion()
     );
+
+
     controladorSimulacion.simular();
 
     return controladorSimulacion.getVectorEstadoAcumulado();
