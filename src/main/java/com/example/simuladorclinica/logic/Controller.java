@@ -18,7 +18,6 @@ public class Controller {
 
     private List<VectorEstado> vectorAcumulador = new ArrayList<>();
     private PriorityQueue<Evento> eventos;
-    private int contadorPacientesAtendidos;
     private double reloj;
     private double tiempoDesdeAnteriorEvento;
     List<Servidor> servidores = new ArrayList<>();
@@ -38,6 +37,11 @@ public class Controller {
     private int desdeDondeMostrar;
 
     boolean seDebeMostrar;
+
+    //Datos Estadisticossss
+    private int contadorPacientesAtendidos;
+    private double acumuladorTiempoEsperaPacientes;
+    private double acumuladorTiempoEsperaPacientesEmergencia;
 
     public void prepararSimulacion(int lineasSimular, int desdeDondeMostrar, double mediaLlegadaGeneral, double mediaLlegadaEmergencia, double mediaLlegadaEspecialista, double mediaLlegadaTerapia, double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia, double mediaAtencionRecepcion){
         this.desdeDondeMostrar = desdeDondeMostrar;
@@ -248,7 +252,6 @@ public class Controller {
     }
 
     private void resolverFinAtencion(Evento evento){
-        contadorPacientesAtendidos = contadorPacientesAtendidos + 1;
         System.out.println(contadorPacientesAtendidos);
         Servidor servidorFinalizacion = evento.getServidor();
         ;
@@ -269,6 +272,9 @@ public class Controller {
         //System.out.println("Evento. paso : " +  evento.getServidor().toString());
         boolean servidorVacio = servidorFinalizacion.getLongitud() == -1;
 
+        if(evento.getTipoEvento() == TipoEvento.FIN_ATENCION_EMERGENCIA){
+            acumuladorTiempoEsperaPacientesEmergencia += pacienteQueTermino.getTiempoEspera();
+        }
 
         if(!servidorVacio){
             double tiempo = 0;
@@ -316,6 +322,9 @@ public class Controller {
                 eventos.add(sigEvento);
             }
 
+        }else{
+            contadorPacientesAtendidos = contadorPacientesAtendidos + 1;
+            acumuladorTiempoEsperaPacientes = acumuladorTiempoEsperaPacientes + pacienteQueTermino.getTiempoEspera();
         }
         actualizarTiemposEspera();
     }
@@ -452,6 +461,18 @@ public class Controller {
         }
 //        System.out.println(vectorEstado.toString());
         //System.out.println(vectorEstado);
+
+        //ESTADISTICA: TIEMPO ESPERA PROMEDIO = acumTiempoEsperaPacientes / cantidadPacientesAtendidos
+        //ESTADISTICA: Acum. tiempo espera para pacientes emergencia
+        //ESTADISTICA: Tiempo Ocupado servidores. (Se guarda en un atributo de cada servidor)
+        //ESTADISTICA: Porc. Ocupación Recepción = debería resolverse igual q la logica anterior, asi q no hay problema.
+        //ESTADISTICA: Tamaño promedio cola Recepción == ?? NI IDEA COMO CALCULARLO
+
+        //estadisticas inventadas por nosotrosssss
+
+        //ESTADISTICA: Cant. pacientes atendidos (re-easy, y si pa q no la vamos a complicar)
+        //ESTADISTICA: Porc. ocupación servidores emergencias
+        //ESTADISTICA: Cantidad promedio de pacientes en el sistema ?? No se si es tan facil de calcular tengo q ver
         vectorAcumulador.add(vectorEstado);
 
     }

@@ -11,6 +11,8 @@ public class Servidor {
   private Estado estado;
   private TipoAtencion tipoAtencion;
 
+  private double tiempoOcupacion;
+
   public Servidor( TipoAtencion tipoAtencion, int id) {
     this.id = id;
     this.cola = new ArrayList<>();
@@ -84,6 +86,12 @@ public class Servidor {
     for (int i = 1; i < cola.size(); i++) {
       Paciente paciente = cola.get(i);
       paciente.aumentarTiempoEspera(tiempo);
+    }
+
+    //LOGICA PARA aumentar el tiempo tiempoOcupación si el servidor esta ocupado
+    //se que no coincide con el nombre del metodo, pero, llegados a este punto.
+    if(this.estado == Estado.OCUPADO){
+      tiempoOcupacion = tiempoOcupacion + tiempo;
     }
   }
 
