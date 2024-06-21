@@ -32,6 +32,10 @@ public class Servidor {
     return cola;
   }
 
+  public double getTiempoOcupacion() {
+    return tiempoOcupacion;
+  }
+
   public Paciente finalizarAtencion(Boolean continuaAtencion) {
     if (cola.isEmpty()) {
       estado = Estado.LIBRE;
@@ -83,7 +87,7 @@ public class Servidor {
       return; // No hay pacientes en la cola
     }
 
-    for (int i = 1; i < cola.size(); i++) {
+    for (int i = 1;  i < cola.size(); i++) {
       Paciente paciente = cola.get(i);
       paciente.aumentarTiempoEspera(tiempo);
     }

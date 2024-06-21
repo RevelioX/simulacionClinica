@@ -5,7 +5,6 @@ import com.example.simuladorclinica.VectorEstado;
 import com.example.simuladorclinica.clases.SimulacionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +20,7 @@ public class ControladorVector {
   public List<VectorEstado> prepararSimulacion(@RequestBody SimulacionDTO request) {
     System.out.println(request.getLineasSimular());
     System.out.println(request.getDesdeDondeMostrar());
+    controladorSimulacion = new Controller();
     controladorSimulacion.limpiarVector();
     controladorSimulacion.prepararSimulacion(
             request.getLineasSimular(),

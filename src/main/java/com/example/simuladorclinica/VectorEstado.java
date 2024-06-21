@@ -10,6 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VectorEstado {
+    public String getNroIteracion() {
+        return nroIteracion;
+    }
+
+    public void setNroIteracion(String nroIteracion) {
+        this.nroIteracion = nroIteracion;
+    }
+
+    String nroIteracion;
     String evento;
     String reloj;
     String LlegadaGeneral_ProximaLLegada;
@@ -74,6 +83,180 @@ public class VectorEstado {
     //--------------------------------------------//
     String Estado_Recepcion;
     String Cola_Recepcion;
+
+    // COSAS ESTADISTICAS //
+
+
+
+    String cantidadPacientesAtendidos;
+    String acumuladorTiempoEspera;
+
+    String acumuladorTiempoEsperaPacientesEmergencia;
+
+    String acumuladorTiempoOcupadoServidores;
+
+    String tiempoEsperaPromedio;
+
+
+    String tiempoOcupacionRecepcion;
+
+    String porcentajeOcupacionRecepcion;
+
+    String tiempoOcupacionGeneral;
+
+    String porcentajeOcupacionGeneral;
+
+    String tiempoOcupacionEspecialidad;
+
+    String porcentajeOcupacionEspecialidad;
+
+    String tiempoOcupacionTerapia;
+
+    String porcentajeOcupacionTerapia;
+
+    String tiempoOcupacionEmergencia;
+
+    String porcentajeOcupacionEmergencia;
+
+    public String getTiempoEsperaPacientesEmergenciaPromedio() {
+        return tiempoEsperaPacientesEmergenciaPromedio;
+    }
+
+    public void setTiempoEsperaPacientesEmergenciaPromedio(String tiempoEsperaPacientesEmergenciaPromedio) {
+        this.tiempoEsperaPacientesEmergenciaPromedio = tiempoEsperaPacientesEmergenciaPromedio;
+    }
+
+    String tiempoEsperaPacientesEmergenciaPromedio;
+
+    //METODOS
+
+    public String getTiempoOcupacionGeneral() {
+        return tiempoOcupacionGeneral;
+    }
+
+    public void setTiempoOcupacionGeneral(String tiempoOcupacionGeneral) {
+        this.tiempoOcupacionGeneral = tiempoOcupacionGeneral;
+    }
+
+    public String getPorcentajeOcupacionGeneral() {
+        return porcentajeOcupacionGeneral;
+    }
+
+    public void setPorcentajeOcupacionGeneral(String porcentajeOcupacionGeneral) {
+        this.porcentajeOcupacionGeneral = porcentajeOcupacionGeneral;
+    }
+
+    public String getTiempoOcupacionEspecialidad() {
+        return tiempoOcupacionEspecialidad;
+    }
+
+    public void setTiempoOcupacionEspecialidad(String tiempoOcupacionEspecialidad) {
+        this.tiempoOcupacionEspecialidad = tiempoOcupacionEspecialidad;
+    }
+
+    public String getPorcentajeOcupacionEspecialidad() {
+        return porcentajeOcupacionEspecialidad;
+    }
+
+    public void setPorcentajeOcupacionEspecialidad(String porcentajeOcupacionEspecialidad) {
+        this.porcentajeOcupacionEspecialidad = porcentajeOcupacionEspecialidad;
+    }
+
+    public String getTiempoOcupacionTerapia() {
+        return tiempoOcupacionTerapia;
+    }
+
+    public void setTiempoOcupacionTerapia(String tiempoOcupacionTerapia) {
+        this.tiempoOcupacionTerapia = tiempoOcupacionTerapia;
+    }
+
+    public String getPorcentajeOcupacionTerapia() {
+        return porcentajeOcupacionTerapia;
+    }
+
+    public void setPorcentajeOcupacionTerapia(String porcentajeOcupacionTerapia) {
+        this.porcentajeOcupacionTerapia = porcentajeOcupacionTerapia;
+    }
+
+    public String getTiempoOcupacionEmergencia() {
+        return tiempoOcupacionEmergencia;
+    }
+
+    public void setTiempoOcupacionEmergencia(String tiempoOcupacionEmergencia) {
+        this.tiempoOcupacionEmergencia = tiempoOcupacionEmergencia;
+    }
+
+    public String getPorcentajeOcupacionEmergencia() {
+        return porcentajeOcupacionEmergencia;
+    }
+
+    public void setPorcentajeOcupacionEmergencia(String porcentajeOcupacionEmergencia) {
+        this.porcentajeOcupacionEmergencia = porcentajeOcupacionEmergencia;
+    }
+
+    public String getFin_Atencion_Recepcion_1_TiempoFinString() {
+        return Fin_Atencion_Recepcion_1_TiempoFinString;
+    }
+
+    public void setFin_Atencion_Recepcion_1_TiempoFinString(String fin_Atencion_Recepcion_1_TiempoFinString) {
+        Fin_Atencion_Recepcion_1_TiempoFinString = fin_Atencion_Recepcion_1_TiempoFinString;
+    }
+
+    public String getCantidadPacientesAtendidos() {
+        return cantidadPacientesAtendidos;
+    }
+    public String getTiempoEsperaPromedio() {
+        return tiempoEsperaPromedio;
+    }
+
+    public String getTiempoOcupacionRecepcion() {
+        return tiempoOcupacionRecepcion;
+    }
+
+    public String getPorcentajeOcupacionRecepcion() {
+        return porcentajeOcupacionRecepcion;
+    }
+
+
+    public void setTiempoEsperaPromedio(String tiempoEsperaPromedio) {
+        this.tiempoEsperaPromedio = tiempoEsperaPromedio;
+    }
+
+    public void setTiempoOcupacionRecepcion(String tiempoOcupacionRecepcion) {
+        this.tiempoOcupacionRecepcion = tiempoOcupacionRecepcion;
+    }
+
+    public void setPorcentajeOcupacionRecepcion(String porcentajeOcupacionRecepcion) {
+        this.porcentajeOcupacionRecepcion = porcentajeOcupacionRecepcion;
+    }
+
+    public void setCantidadPacientesAtendidos(String cantidadPacientesAtendidos) {
+        this.cantidadPacientesAtendidos = cantidadPacientesAtendidos;
+    }
+
+    public String getAcumuladorTiempoEspera() {
+        return acumuladorTiempoEspera;
+    }
+
+    public void setAcumuladorTiempoEspera(String acumuladorTiempoEspera) {
+        this.acumuladorTiempoEspera = acumuladorTiempoEspera;
+    }
+    public String getAcumuladorTiempoOcupadoServidores() {
+        return acumuladorTiempoOcupadoServidores;
+    }
+
+    public void setAcumuladorTiempoOcupadoServidores(String acumuladorTiempoOcupadoServidores) {
+        this.acumuladorTiempoOcupadoServidores = acumuladorTiempoOcupadoServidores;
+    }
+
+    public String getAcumuladorTiempoEsperaPacientesEmergencia() {
+        return acumuladorTiempoEsperaPacientesEmergencia;
+    }
+
+    public void setAcumuladorTiempoEsperaPacientesEmergencia(String acumuladorTiempoEsperaPacientesEmergencia) {
+        this.acumuladorTiempoEsperaPacientesEmergencia = acumuladorTiempoEsperaPacientesEmergencia;
+    }
+
 
     public String getEstado_Recepcion() {
         return Estado_Recepcion;

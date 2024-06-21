@@ -43,6 +43,8 @@ public class Controller {
     private double acumuladorTiempoEsperaPacientes;
     private double acumuladorTiempoEsperaPacientesEmergencia;
 
+    private int acumuladorCantidadPacientesEmergencia;
+
     public void prepararSimulacion(int lineasSimular, int desdeDondeMostrar, double mediaLlegadaGeneral, double mediaLlegadaEmergencia, double mediaLlegadaEspecialista, double mediaLlegadaTerapia, double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia, double mediaAtencionRecepcion){
         this.desdeDondeMostrar = desdeDondeMostrar;
         this.lineasSimular = lineasSimular;
@@ -153,9 +155,10 @@ public class Controller {
     }
     public void simular(){
         for(int i = 0; i < lineasSimular; i++){
-            if ((i > desdeDondeMostrar && i < desdeDondeMostrar + 300) || i == lineasSimular - 1){
+            if ((i >= desdeDondeMostrar && i < desdeDondeMostrar + 300) || i == lineasSimular - 1){
                 seDebeMostrar = true;
                 vectorEstado = new VectorEstado();
+                vectorEstado.setNroIteracion(String.valueOf(i));
             }else{
                 seDebeMostrar = false;
             }
@@ -274,6 +277,7 @@ public class Controller {
 
         if(evento.getTipoEvento() == TipoEvento.FIN_ATENCION_EMERGENCIA){
             acumuladorTiempoEsperaPacientesEmergencia += pacienteQueTermino.getTiempoEspera();
+            acumuladorCantidadPacientesEmergencia += 1;
         }
 
         if(!servidorVacio){
@@ -301,6 +305,7 @@ public class Controller {
         }
 
         if(evento.getTipoEvento() != TipoEvento.FIN_ATENCION_RECEPCION && continuarAtencion){
+            if(seDebeMostrar) vectorEstado.setResultado_Recepcion("Pasa Recepción");
             List<Servidor> serviroresTipoCorrespondiente = servidores.stream().filter(
                     servidor -> {
                         boolean b = servidor.getTipoAtencion() == TipoAtencion.Recepcion;
@@ -365,12 +370,22 @@ public class Controller {
         vectorEstado.setLlegadaTerapia_ProximaLlegada(String.valueOf(proxLlegadaTerapia));
         vectorEstado.setLlegadaEspecialista_ProximaLlegada(String.valueOf(proxLlegadaEspecialidad));
 
+        double tiempoOcupadoServidores = 0;
+
+        double tiempoOcupadoRecepcion = 0;
+        double tiempoOcupadoGeneral = 0;
+        double tiempoOcupadoEmergencia = 0;
+        double tiempoOcupadoEspecialidad = 0;
+        double tiempoOcupadoTerapia = 0;
         for (Servidor servidor : servidores) {
+            tiempoOcupadoServidores += servidor.getTiempoOcupacion();
+
             for (Paciente paciente : servidor.getCola()) {
                 vectorEstado.addEstado_Espera_Paciente(paciente.getEstado(), String.valueOf(paciente.getTiempoEspera()), paciente.getTipoAtencion().getNombre());
             }
 
             if (servidor.getTipoAtencion() == TipoAtencion.General) {
+                tiempoOcupadoGeneral += servidor.getTiempoOcupacion();
                 if (servidor.getId() == 1) {
                     vectorEstado.setCola_Medico_General_1(String.valueOf(servidor.getLongitud()));
                     vectorEstado.setEstado_Medico_General_1(servidor.getEstado().toString());
@@ -386,6 +401,7 @@ public class Controller {
             }
 
             if (servidor.getTipoAtencion() == TipoAtencion.Emergencia) {
+                tiempoOcupadoEmergencia += servidor.getTiempoOcupacion();
                 if (servidor.getId() == 1) {
                     vectorEstado.setCola_Medico_Emergencia_1(String.valueOf(servidor.getLongitud()));
                     vectorEstado.setEstado_Medico_Emergencia_1(servidor.getEstado().toString());
@@ -397,6 +413,7 @@ public class Controller {
             }
 
             if (servidor.getTipoAtencion() == TipoAtencion.Especialista) {
+                tiempoOcupadoEspecialidad += servidor.getTiempoOcupacion();
                 if (servidor.getId() == 1) {
                     vectorEstado.setCola_Medico_Especialista_1(String.valueOf(servidor.getLongitud()));
                     vectorEstado.setEstado_Medico_Especialista_1(servidor.getEstado().toString());
@@ -416,6 +433,7 @@ public class Controller {
             }
 
             if (servidor.getTipoAtencion() == TipoAtencion.Terapia) {
+                tiempoOcupadoTerapia += servidor.getTiempoOcupacion();
                 if (servidor.getId() == 1) {
                     vectorEstado.setCola_Medico_Fisico_1(String.valueOf(servidor.getLongitud()));
                     vectorEstado.setEstado_Medico_Fisico_1(servidor.getEstado().toString());
@@ -427,6 +445,7 @@ public class Controller {
             }
 
             if (servidor.getTipoAtencion() == TipoAtencion.Recepcion) {
+                tiempoOcupadoRecepcion += servidor.getTiempoOcupacion();
                 if (servidor.getId() == 1) {
                     vectorEstado.setCola_Recepcion(String.valueOf(servidor.getLongitud()));
                     vectorEstado.setEstado_Recepcion(servidor.getEstado().toString());
@@ -459,6 +478,30 @@ public class Controller {
                 if (evento.getServidor().getId() == 1) vectorEstado.setFin_Atencion_Recepcion_1_TiempoFin(String.valueOf(evento.getTiempo()));
             }
         }
+        //TIEMPO ESPERA PROMEDIO
+        vectorEstado.setCantidadPacientesAtendidos(String.valueOf(contadorPacientesAtendidos));
+        vectorEstado.setAcumuladorTiempoEspera(String.valueOf(acumuladorTiempoEsperaPacientes));
+        vectorEstado.setTiempoEsperaPromedio(String.valueOf(acumuladorTiempoEsperaPacientes/contadorPacientesAtendidos));
+        //PORCENTAJE OCUPACION PARA CADA TIPO DE SERVICIO
+
+        vectorEstado.setTiempoOcupacionRecepcion(String.valueOf(tiempoOcupadoRecepcion));
+        vectorEstado.setPorcentajeOcupacionRecepcion(String.valueOf((tiempoOcupadoRecepcion/reloj) * 100));
+        vectorEstado.setTiempoOcupacionGeneral(String.valueOf(tiempoOcupadoGeneral));
+        vectorEstado.setPorcentajeOcupacionGeneral(String.valueOf(tiempoOcupadoGeneral/(reloj*3) * 100));
+        vectorEstado.setTiempoOcupacionEmergencia(String.valueOf(tiempoOcupadoEmergencia));
+        vectorEstado.setPorcentajeOcupacionEmergencia(String.valueOf(((tiempoOcupadoEmergencia) / (2*reloj)) * 100));
+        vectorEstado.setTiempoOcupacionEspecialidad(String.valueOf(tiempoOcupadoEspecialidad));
+        vectorEstado.setPorcentajeOcupacionEspecialidad(String.valueOf(((tiempoOcupadoEspecialidad / (4*reloj)) * 100)));
+        vectorEstado.setTiempoOcupacionTerapia(String.valueOf(tiempoOcupadoTerapia));
+        vectorEstado.setPorcentajeOcupacionTerapia(String.valueOf(((tiempoOcupadoTerapia / (2*reloj)) * 100)));
+
+        //Tiempo promedio de emergencia promedio
+        vectorEstado.setAcumuladorTiempoEsperaPacientesEmergencia(String.valueOf(acumuladorTiempoEsperaPacientesEmergencia));
+        vectorEstado.setAcumuladorTiempoOcupadoServidores(String.valueOf(tiempoOcupadoServidores));
+        vectorEstado.setTiempoEsperaPacientesEmergenciaPromedio(String.valueOf(acumuladorTiempoEsperaPacientesEmergencia/acumuladorCantidadPacientesEmergencia));
+
+
+
 //        System.out.println(vectorEstado.toString());
         //System.out.println(vectorEstado);
 
@@ -466,6 +509,11 @@ public class Controller {
         //ESTADISTICA: Acum. tiempo espera para pacientes emergencia
         //ESTADISTICA: Tiempo Ocupado servidores. (Se guarda en un atributo de cada servidor)
         //ESTADISTICA: Porc. Ocupación Recepción = debería resolverse igual q la logica anterior, asi q no hay problema.
+        //tiempo ocupado / tiempo total.
+        //Estadistica: Porc. Ocupacion General
+        //Estadistica: Porc. Ocupacion Especialidad
+        //Estadistica: Porc. Ocupacion Emergencias
+        //Estadistica: Porc. Ocupacion Terapia
         //ESTADISTICA: Tamaño promedio cola Recepción == ?? NI IDEA COMO CALCULARLO
 
         //estadisticas inventadas por nosotrosssss
@@ -474,6 +522,7 @@ public class Controller {
         //ESTADISTICA: Porc. ocupación servidores emergencias
         //ESTADISTICA: Cantidad promedio de pacientes en el sistema ?? No se si es tan facil de calcular tengo q ver
         vectorAcumulador.add(vectorEstado);
+
 
     }
 
