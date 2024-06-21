@@ -18,6 +18,7 @@ public class Controller {
 
     private List<VectorEstado> vectorAcumulador = new ArrayList<>();
     private PriorityQueue<Evento> eventos;
+    private int contadorPacientesAtendidos;
     private double reloj;
     private double tiempoDesdeAnteriorEvento;
     List<Servidor> servidores = new ArrayList<>();
@@ -247,6 +248,8 @@ public class Controller {
     }
 
     private void resolverFinAtencion(Evento evento){
+        contadorPacientesAtendidos = contadorPacientesAtendidos + 1;
+        System.out.println(contadorPacientesAtendidos);
         Servidor servidorFinalizacion = evento.getServidor();
         ;
 
@@ -448,7 +451,7 @@ public class Controller {
             }
         }
 //        System.out.println(vectorEstado.toString());
-        System.out.println(vectorEstado);
+        //System.out.println(vectorEstado);
         vectorAcumulador.add(vectorEstado);
 
     }
