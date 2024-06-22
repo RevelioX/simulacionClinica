@@ -15,7 +15,7 @@ public class GeneradorNumerosExponencial extends Generador {
 
 
     public void generarValor(int cantidad) {
-        double mu = 1/lambda;
+        double mu = lambda;
         for(int i = 0; i < cantidad; i++){
             double random = Math.random();
             double generado = - mu * Math.log(1 - random);
