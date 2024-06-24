@@ -45,6 +45,12 @@ public class Controller {
 
     private int acumuladorCantidadPacientesEmergencia;
 
+    private int acumuladorEdadesPacientes;
+
+    private int cantidadLlegadas;
+
+    private int cantidadLlegadasConSistemaLleno;
+
     public void prepararSimulacion(int lineasSimular, int desdeDondeMostrar, double mediaLlegadaGeneral, double mediaLlegadaEmergencia, double mediaLlegadaEspecialista, double mediaLlegadaTerapia, double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia, double mediaAtencionRecepcion){
         this.desdeDondeMostrar = desdeDondeMostrar;
         this.lineasSimular = lineasSimular;
@@ -194,8 +200,23 @@ public class Controller {
         //}
     }
 
-    private void resolverEventoLlegada(Evento evento){
+    private boolean estanTodosLosServidoresOcupados(TipoAtencion tipoAtencion){
+        for(Servidor servidor: servidores){
+            if(servidor.getTipoAtencion() == tipoAtencion){
+                if(servidor.getEstado() == Estado.LIBRE){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
+    private void resolverEventoLlegada(Evento evento){
+        cantidadLlegadas += 1;
+        if(estanTodosLosServidoresOcupados(evento.getTipoEvento().getTipoAtencion())){
+            System.out.println("LLEGADA CON SERVICIO LLENO!");
+            cantidadLlegadasConSistemaLleno += 1;
+        }
         List<Servidor> serviroresTipoCorrespondiente = servidores.stream().filter(
                 servidor -> {
                     boolean b = servidor.getTipoAtencion() == evento.getTipoEvento().getTipoAtencion();
@@ -255,7 +276,7 @@ public class Controller {
     }
 
     private void resolverFinAtencion(Evento evento){
-        System.out.println(contadorPacientesAtendidos);
+        //System.out.println(contadorPacientesAtendidos);
         Servidor servidorFinalizacion = evento.getServidor();
         ;
 
@@ -329,6 +350,7 @@ public class Controller {
 
         }else{
             contadorPacientesAtendidos = contadorPacientesAtendidos + 1;
+            acumuladorEdadesPacientes = acumuladorEdadesPacientes + pacienteQueTermino.getEdad();
             acumuladorTiempoEsperaPacientes = acumuladorTiempoEsperaPacientes + pacienteQueTermino.getTiempoEspera();
         }
         actualizarTiemposEspera();
@@ -377,6 +399,7 @@ public class Controller {
         double tiempoOcupadoEmergencia = 0;
         double tiempoOcupadoEspecialidad = 0;
         double tiempoOcupadoTerapia = 0;
+
         for (Servidor servidor : servidores) {
             tiempoOcupadoServidores += servidor.getTiempoOcupacion();
 
@@ -500,7 +523,19 @@ public class Controller {
         vectorEstado.setAcumuladorTiempoOcupadoServidores(String.valueOf(tiempoOcupadoServidores));
         vectorEstado.setTiempoEsperaPacientesEmergenciaPromedio(String.valueOf(acumuladorTiempoEsperaPacientesEmergencia/acumuladorCantidadPacientesEmergencia));
 
+        //Edades promedio de pacientes atendidos
+        vectorEstado.setAcumuladorEdadesPacientesAtendidos(String.valueOf(acumuladorEdadesPacientes));
+        if( contadorPacientesAtendidos != 0){
+            vectorEstado.setPromedioEdadesPacientesAtendidos(String.valueOf(acumuladorEdadesPacientes/contadorPacientesAtendidos));
+        }
 
+        //Cantidad pacientes atendidos x hora
+        vectorEstado.setCantidadPacientesAtendidosPorHora(String.valueOf(contadorPacientesAtendidos/reloj));
+
+        //Probabilidad de que un paciente llegue y se encuentre el servicio lleno.
+        System.out.println(cantidadLlegadasConSistemaLleno);
+        double probLlegadasSistLleno = (double) cantidadLlegadasConSistemaLleno / cantidadLlegadas;
+        vectorEstado.setProbabilidadLlegadaConServicioLleno(String.valueOf(probLlegadasSistLleno));
 
 //        System.out.println(vectorEstado.toString());
         //System.out.println(vectorEstado);

@@ -119,6 +119,46 @@ public class VectorEstado {
 
     String porcentajeOcupacionEmergencia;
 
+    String cantidadPacientesAtendidosPorHora;
+
+    String probabilidadLlegadaConServicioLleno;
+
+    public String getProbabilidadLlegadaConServicioLleno() {
+        return probabilidadLlegadaConServicioLleno;
+    }
+
+    public void setProbabilidadLlegadaConServicioLleno(String probabilidadLlegadaConServicioLleno) {
+        this.probabilidadLlegadaConServicioLleno = probabilidadLlegadaConServicioLleno;
+    }
+
+    public String getCantidadPacientesAtendidosPorHora() {
+        return cantidadPacientesAtendidosPorHora;
+    }
+
+    public void setCantidadPacientesAtendidosPorHora(String cantidadPacientesAtendidosPorHora) {
+        this.cantidadPacientesAtendidosPorHora = cantidadPacientesAtendidosPorHora;
+    }
+
+    public String getAcumuladorEdadesPacientesAtendidos() {
+        return acumuladorEdadesPacientesAtendidos;
+    }
+
+    public void setAcumuladorEdadesPacientesAtendidos(String acumuladorEdadesPacientesAtendidos) {
+        this.acumuladorEdadesPacientesAtendidos = acumuladorEdadesPacientesAtendidos;
+    }
+
+    public String getPromedioEdadesPacientesAtendidos() {
+        return promedioEdadesPacientesAtendidos;
+    }
+
+    public void setPromedioEdadesPacientesAtendidos(String promedioEdadesPacientesAtendidos) {
+        this.promedioEdadesPacientesAtendidos = promedioEdadesPacientesAtendidos;
+    }
+
+    String acumuladorEdadesPacientesAtendidos;
+
+    String promedioEdadesPacientesAtendidos;
+
     public String getTiempoEsperaPacientesEmergenciaPromedio() {
         return tiempoEsperaPacientesEmergenciaPromedio;
     }
