@@ -2,7 +2,19 @@ package com.example.simuladorclinica.clases;
 
 public class Paciente {
 
+    private static int idPacientes = 0;
+
     private int edad;
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     private Estado estado;
 
     private Double tiempoEspera = 0d;
@@ -12,6 +24,8 @@ public class Paciente {
 
     public Paciente(TipoAtencion tipoAtencion) {
         this.tipoAtencion = tipoAtencion;
+        idPacientes = idPacientes + 1;
+        this.id = idPacientes;
     }
 
     public String getEstado(){

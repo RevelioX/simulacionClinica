@@ -1,6 +1,7 @@
 package com.example.simuladorclinica;
 
 import com.example.simuladorclinica.clases.Paciente;
+import com.example.simuladorclinica.clases.PacienteDTO;
 
 
 import java.io.FileInputStream;
@@ -25,7 +26,7 @@ public class VectorEstado {
     String LlegadaEmergencia_ProximaLlegada;
     String LlegadaEspecialista_ProximaLlegada;
     String LlegadaTerapia_ProximaLlegada;
-    List<String> Estado_Espera_Paciente = new ArrayList<>(); // Estado - Espera - TipoAtencion En ese orden
+    List<PacienteDTO> Estado_Espera_Paciente = new ArrayList<>(); // Estado - Espera - TipoAtencion En ese orden
     //-----------------------------------------------//
     String Fin_Atencion_General_1_TiempoFin;
     String Fin_Atencion_General_2_TiempoFin;
@@ -326,18 +327,16 @@ public class VectorEstado {
         LlegadaTerapia_ProximaLlegada = llegadaTerapia_ProximaLlegada;
     }
 
-    public List<String> getEstado_Espera_Paciente() {
+    public List<PacienteDTO> getEstado_Espera_Paciente() {
         return Estado_Espera_Paciente;
     }
 
-    public void setEstado_Espera_Paciente(List<String> estado_Espera_Paciente) {
+    public void setEstado_Espera_Paciente(List<PacienteDTO> estado_Espera_Paciente) {
         Estado_Espera_Paciente = estado_Espera_Paciente;
     }
 
-    public void addEstado_Espera_Paciente(String estado, String espera, String paciente){
-        Estado_Espera_Paciente.add(estado);
-        Estado_Espera_Paciente.add(espera);
-        Estado_Espera_Paciente.add(paciente);
+    public void addEstado_Espera_Paciente(Paciente paciente){
+        Estado_Espera_Paciente.add(new PacienteDTO(String.valueOf(paciente.getId()), paciente.getTipoAtencion().getNombre(), String.valueOf(paciente.getTiempoEspera()), paciente.getEstado()));
     }
 
     public String getFin_Atencion_General_1_TiempoFin() {

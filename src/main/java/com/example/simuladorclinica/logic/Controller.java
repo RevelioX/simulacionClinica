@@ -381,7 +381,7 @@ public class Controller {
             tiempoOcupadoServidores += servidor.getTiempoOcupacion();
 
             for (Paciente paciente : servidor.getCola()) {
-                vectorEstado.addEstado_Espera_Paciente(paciente.getEstado(), String.valueOf(paciente.getTiempoEspera()), paciente.getTipoAtencion().getNombre());
+                vectorEstado.addEstado_Espera_Paciente(paciente);
             }
 
             if (servidor.getTipoAtencion() == TipoAtencion.General) {
