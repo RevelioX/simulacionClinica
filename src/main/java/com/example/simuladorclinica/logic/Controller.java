@@ -15,8 +15,7 @@ import java.util.stream.Collectors;
 @Component
 
 public class Controller {
-    private VectorEstado vectorEstado;
-
+    private VectorEstado vectorEstado = new VectorEstado();
     private List<VectorEstado> vectorAcumulador = new ArrayList<>();
     private PriorityQueue<Evento> eventos;
     private double reloj;
