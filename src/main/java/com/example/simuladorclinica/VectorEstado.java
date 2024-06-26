@@ -123,6 +123,28 @@ public class VectorEstado {
 
     String probabilidadLlegadaConServicioLleno;
 
+    // Cosas TP5 - Cosas de Ec diferencial
+
+    String tiempoFinalizacionInterrupcion;
+
+    public String getTiempoFinalizacionInterrupcion() {
+        return tiempoFinalizacionInterrupcion;
+    }
+
+    public void setTiempoFinalizacionInterrupcion(String tiempoFinalizacionInterrupcion) {
+        this.tiempoFinalizacionInterrupcion = tiempoFinalizacionInterrupcion;
+    }
+
+    public String getTiempoProximaInterrupcion() {
+        return tiempoProximaInterrupcion;
+    }
+
+    public void setTiempoProximaInterrupcion(String tiempoProximaInterrupcion) {
+        this.tiempoProximaInterrupcion = tiempoProximaInterrupcion;
+    }
+
+    String tiempoProximaInterrupcion;
+
     public String getProbabilidadLlegadaConServicioLleno() {
         return probabilidadLlegadaConServicioLleno;
     }

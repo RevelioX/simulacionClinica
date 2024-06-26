@@ -10,8 +10,8 @@ public class Servidor {
   private List<Paciente> cola;
   private Estado estado;
   private TipoAtencion tipoAtencion;
-
   private double tiempoOcupacion;
+
 
   public Servidor( TipoAtencion tipoAtencion, int id) {
     this.id = id;

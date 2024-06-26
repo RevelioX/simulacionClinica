@@ -8,6 +8,18 @@ public class Evento {
 
   private Servidor servidor;
 
+  private double tiempoEnfriamentoLlave;
+
+  private double tiempoCreacion;
+
+  public double getTiempoEnfriamentoLlave() {
+    return tiempoEnfriamentoLlave;
+  }
+
+  public void setTiempoEnfriamentoLlave(double tiempoEnfriamentoLlave) {
+    this.tiempoEnfriamentoLlave = tiempoEnfriamentoLlave;
+  }
+
   public Servidor getServidor() {
     return servidor;
   }
@@ -21,15 +33,25 @@ public class Evento {
             '}';
   }
 
-  public Evento(double tiempo, TipoEvento tipoEvento) {
+  public Evento(double tiempo, TipoEvento tipoEvento, double tiempoCreacion) {
     this.tiempo = tiempo;
     this.tipoEvento = tipoEvento;
+    this.tiempoCreacion = tiempoCreacion;
   }
 
-  public Evento(double tiempo, TipoEvento tipoEvento, Servidor servidor){
+  public double getTiempoCreacion() {
+    return tiempoCreacion;
+  }
+
+  public void setTiempoCreacion(double tiempoCreacion) {
+    this.tiempoCreacion = tiempoCreacion;
+  }
+
+  public Evento(double tiempo, TipoEvento tipoEvento, Servidor servidor, double tiempoCreacion){
     this.tiempo = tiempo;
     this.tipoEvento = tipoEvento;
     this.servidor = servidor;
+    this.tiempoCreacion = tiempoCreacion;
   }
 
   public double getTiempo() {

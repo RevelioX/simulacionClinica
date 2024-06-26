@@ -2,6 +2,7 @@ package com.example.simuladorclinica.logic;
 
 import com.example.simuladorclinica.VectorEstado;
 import com.example.simuladorclinica.clases.*;
+import com.example.simuladorclinica.ecuDiferencial.ResolverEcDiferencial;
 import com.example.simuladorclinica.generators.Generador;
 import com.example.simuladorclinica.generators.GeneradorNumerosExponencial;
 import com.example.simuladorclinica.generators.GeneradorNumerosNormales;
@@ -32,11 +33,15 @@ public class Controller {
     private Generador generadorFinAtencionTerapia;
     private Generador generadorFinAtencionRecepcion;
 
+    private Generador generadorInterrupcion;
+
     private int lineasSimular;
 
     private int desdeDondeMostrar;
 
     boolean seDebeMostrar;
+
+    final int VALOR_T = 2;
 
     //Datos Estadisticossss
     private int contadorPacientesAtendidos;
@@ -83,6 +88,9 @@ public class Controller {
 
         generadorLlegadaRecepcion = new GeneradorNumerosUniformes(0,1);
         generadorLlegadaRecepcion.generarValor(1000);
+
+        generadorInterrupcion = new GeneradorNumerosUniformes(0,1);
+        generadorInterrupcion.generarValor(1000);
 
     }
 
@@ -143,16 +151,16 @@ public class Controller {
     private void generarPrimerosEventos(){
         double tiempo;
         tiempo = generadorLlegadasGeneral.getValor();
-        Evento eventoLlegadaGeneral = new Evento(tiempo, TipoEvento.LLEGADA_PACIENTE_GENERAL);
+        Evento eventoLlegadaGeneral = new Evento(tiempo, TipoEvento.LLEGADA_PACIENTE_GENERAL, reloj);
 
         tiempo = generadorLlegadasEmergencia.getValor();
-        Evento eventoLlegadaEmergencia = new Evento(tiempo, TipoEvento.LLEGADA_PACIENTE_EMERGENCIA);
+        Evento eventoLlegadaEmergencia = new Evento(tiempo, TipoEvento.LLEGADA_PACIENTE_EMERGENCIA, reloj);
 
         tiempo = generadorLlegadasEspecialista.getValor();
-        Evento eventoLlegadaEspecialista = new Evento(tiempo, TipoEvento.LLEGADA_PACIENTE_ESPECIALIDAD);
+        Evento eventoLlegadaEspecialista = new Evento(tiempo, TipoEvento.LLEGADA_PACIENTE_ESPECIALIDAD, reloj);
 
         tiempo = generadorLlegadaTerapia.getValor();
-        Evento eventoLlegadaTerapia = new Evento(tiempo, TipoEvento.LLEGADA_PACIENTE_TERAPIA);
+        Evento eventoLlegadaTerapia = new Evento(tiempo, TipoEvento.LLEGADA_PACIENTE_TERAPIA, reloj);
 
         eventos.add(eventoLlegadaGeneral);
         eventos.add(eventoLlegadaEspecialista);
@@ -195,9 +203,12 @@ public class Controller {
             resolverEventoLlegada(evento);
         } else if(tipoEvento.esDeFinAtencion()){
             resolverFinAtencion(evento);
-        }//else if(tipoEvento.esDeRecepcion()){
-        //   resolverFinAtencionRecepcion(evento);
-        //}
+        }else if(tipoEvento.esDeInterrupcion()) {
+            resolverInterrupcion(evento);
+        }
+        else if(tipoEvento.esDeFinInterrupcion()){
+            resolverFinInterrupcion(evento);
+        }
     }
 
     private boolean estanTodosLosServidoresOcupados(TipoAtencion tipoAtencion){
@@ -209,6 +220,38 @@ public class Controller {
             }
         }
         return true;
+    }
+
+    private void resolverInterrupcion(Evento evento){
+        vectorEstado.setTiempoFinalizacionInterrupcion(String.valueOf(evento.getTiempoEnfriamentoLlave()));
+        for(Evento eventoProgramado: eventos){
+            if(eventoProgramado.getTipoEvento() == TipoEvento.FIN_ATENCION_ESPECIALIDAD){
+                double nuevoTiempo =  ( eventoProgramado.getTiempo() - eventoProgramado.getTiempoCreacion() ) + evento.getTiempoEnfriamentoLlave();
+                eventoProgramado.setTiempo( nuevoTiempo );
+            }
+        }
+        Evento eventoFinalizacion = new Evento(evento.getTiempoEnfriamentoLlave(), TipoEvento.FIN_INTERRUPCION, reloj);
+        eventos.add(eventoFinalizacion);
+    }
+
+    private void resolverFinInterrupcion(Evento evento){
+        double tiempoProximaInterrupcion;
+        double numeroAleatorio = generadorInterrupcion.getValor();
+        if(numeroAleatorio < 0.60){
+            tiempoProximaInterrupcion = VALOR_T * 6;
+        }else if( numeroAleatorio < 0.8){
+            tiempoProximaInterrupcion = VALOR_T * 4;
+        } else {
+            tiempoProximaInterrupcion = VALOR_T * 8;
+        }
+
+        vectorEstado.setTiempoProximaInterrupcion(String.valueOf(tiempoProximaInterrupcion));
+
+        double duracionInterrupcion;
+        duracionInterrupcion = ResolverEcDiferencial.resolverEcuacion("0.025*x-0.5*y-12.85");
+
+        Evento proxInterrupcion = new Evento(reloj + tiempoProximaInterrupcion, TipoEvento.INTERRUPCION, reloj + tiempoProximaInterrupcion + duracionInterrupcion);
+
     }
 
     private void resolverEventoLlegada(Evento evento){
@@ -247,7 +290,7 @@ public class Controller {
 
         double tiempoProximoEvento = tiempo + reloj;
 
-        Evento sigEvento = new Evento(tiempoProximoEvento, evento.getTipoEvento() );
+        Evento sigEvento = new Evento(tiempoProximoEvento, evento.getTipoEvento(), reloj );
         eventos.add(sigEvento);
 
         //generar el evento finAtención correspondiente si el Paciente entro en un servidor con cola vacia.
@@ -269,7 +312,7 @@ public class Controller {
             }
             tiempoProximoEvento = tiempo + reloj;
 
-            sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion, servidorCorrespondiente);
+            sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion, servidorCorrespondiente, reloj);
             eventos.add(sigEvento);
         }
         actualizarTiemposEspera();
@@ -321,7 +364,7 @@ public class Controller {
                 tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_RECEPCION;
             }
             double tiempoProximoEvento = tiempo + reloj;
-            Evento sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion, evento.getServidor());
+            Evento sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion, evento.getServidor(),  reloj);
             eventos.add(sigEvento);
         }
 
@@ -344,7 +387,7 @@ public class Controller {
                 double tiempo = generadorFinAtencionRecepcion.getValor();
                 double tiempoProximoEvento = tiempo + reloj;
 
-                Evento sigEvento = new Evento(tiempoProximoEvento, TipoEvento.FIN_ATENCION_RECEPCION, servidorCorrespondiente);
+                Evento sigEvento = new Evento(tiempoProximoEvento, TipoEvento.FIN_ATENCION_RECEPCION, servidorCorrespondiente, reloj);
                 eventos.add(sigEvento);
             }
 

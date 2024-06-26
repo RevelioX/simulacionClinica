@@ -9,7 +9,10 @@ public enum TipoEvento {
   FIN_ATENCION_EMERGENCIA("Fin atención emergencia", TipoAtencion.Emergencia),
   FIN_ATENCION_ESPECIALIDAD("Fin atención especialidad", TipoAtencion.Especialista),
   FIN_ATENCION_TERAPIA("Fin atención terapia", TipoAtencion.Terapia),
-  FIN_ATENCION_RECEPCION("Fin atención recepción", TipoAtencion.Recepcion);
+  FIN_ATENCION_RECEPCION("Fin atención recepción", TipoAtencion.Recepcion),
+  INTERRUPCION("Interrupcion", null),
+  FIN_INTERRUPCION("Fin Interrupcion", null);
+
 
   private String nombre;
 
@@ -57,6 +60,15 @@ public enum TipoEvento {
             tipoEvento == FIN_ATENCION_GENERAL ||
             tipoEvento == FIN_ATENCION_TERAPIA ||
             tipoEvento == FIN_ATENCION_RECEPCION);
+  }
+  public boolean esDeInterrupcion(){
+    TipoEvento tipoEvento = this;
+    return tipoEvento == INTERRUPCION;
+  }
+
+  public boolean esDeFinInterrupcion(){
+    TipoEvento tipoEvento = this;
+    return tipoEvento == FIN_INTERRUPCION;
   }
 
   public boolean esDeRecepcion(){
