@@ -100,4 +100,5 @@ public class SimulacionDTO {
   public void setMediaAtencionRecepcion(double mediaAtencionRecepcion) {
     this.mediaAtencionRecepcion = mediaAtencionRecepcion;
   }
+
 }

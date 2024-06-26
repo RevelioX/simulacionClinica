@@ -166,6 +166,25 @@ public class Controller {
         eventos.add(eventoLlegadaEspecialista);
         eventos.add(eventoLlegadaEmergencia);
         eventos.add(eventoLlegadaTerapia);
+
+        double numeroAleatorio = generadorInterrupcion.getValor();
+        double tiempoProximaInterrupcion;
+        if(numeroAleatorio < 0.60){
+            tiempoProximaInterrupcion = VALOR_T * 6;
+        }else if( numeroAleatorio < 0.8){
+            tiempoProximaInterrupcion = VALOR_T * 4;
+        } else {
+            tiempoProximaInterrupcion = VALOR_T * 8;
+        }
+
+        double duracionInterrupcion;
+        duracionInterrupcion = ResolverEcDiferencial.resolverEcuacion("0.025*x-0.5*y-12.85");
+
+        Evento proxInterrupcion = new Evento(reloj + tiempoProximaInterrupcion, TipoEvento.INTERRUPCION, reloj);
+        proxInterrupcion.setTiempoEnfriamentoLlave(reloj + tiempoProximaInterrupcion + duracionInterrupcion);
+
+        System.out.println(proxInterrupcion);
+        eventos.add(proxInterrupcion);
     }
     public void simular(){
         for(int i = 0; i < lineasSimular; i++){
@@ -245,19 +264,19 @@ public class Controller {
             tiempoProximaInterrupcion = VALOR_T * 8;
         }
 
-        vectorEstado.setTiempoProximaInterrupcion(String.valueOf(tiempoProximaInterrupcion));
+        vectorEstado.setTiempoProximaInterrupcion(String.valueOf(tiempoProximaInterrupcion + reloj));
 
         double duracionInterrupcion;
         duracionInterrupcion = ResolverEcDiferencial.resolverEcuacion("0.025*x-0.5*y-12.85");
 
-        Evento proxInterrupcion = new Evento(reloj + tiempoProximaInterrupcion, TipoEvento.INTERRUPCION, reloj + tiempoProximaInterrupcion + duracionInterrupcion);
-
+        Evento proxInterrupcion = new Evento(reloj + tiempoProximaInterrupcion, TipoEvento.INTERRUPCION, reloj);
+        proxInterrupcion.setTiempoEnfriamentoLlave(reloj + tiempoProximaInterrupcion + duracionInterrupcion);
+        eventos.add(proxInterrupcion);
     }
 
     private void resolverEventoLlegada(Evento evento){
         cantidadLlegadas += 1;
         if(estanTodosLosServidoresOcupados(evento.getTipoEvento().getTipoAtencion())){
-            System.out.println("LLEGADA CON SERVICIO LLENO!");
             cantidadLlegadasConSistemaLleno += 1;
         }
         List<Servidor> serviroresTipoCorrespondiente = servidores.stream().filter(
@@ -576,7 +595,6 @@ public class Controller {
         vectorEstado.setCantidadPacientesAtendidosPorHora(String.valueOf(contadorPacientesAtendidos/reloj));
 
         //Probabilidad de que un paciente llegue y se encuentre el servicio lleno.
-        System.out.println(cantidadLlegadasConSistemaLleno);
         double probLlegadasSistLleno = (double) cantidadLlegadasConSistemaLleno / cantidadLlegadas;
         vectorEstado.setProbabilidadLlegadaConServicioLleno(String.valueOf(probLlegadasSistLleno));
 

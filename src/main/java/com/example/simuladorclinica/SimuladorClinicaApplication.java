@@ -12,11 +12,6 @@ public class SimuladorClinicaApplication {
   }
 //
 
-  Controller controller = new Controller();
-//    controller.prepararSimulacion(1000000,999000,18,12,15,
-//            10,6,10,4,4,5);
-//    controller.simular();
-
 
 
 }

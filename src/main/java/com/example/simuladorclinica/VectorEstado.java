@@ -127,6 +127,8 @@ public class VectorEstado {
 
     String tiempoFinalizacionInterrupcion;
 
+    String tiempoProximaInterrupcion;
+
     public String getTiempoFinalizacionInterrupcion() {
         return tiempoFinalizacionInterrupcion;
     }
@@ -143,7 +145,7 @@ public class VectorEstado {
         this.tiempoProximaInterrupcion = tiempoProximaInterrupcion;
     }
 
-    String tiempoProximaInterrupcion;
+
 
     public String getProbabilidadLlegadaConServicioLleno() {
         return probabilidadLlegadaConServicioLleno;
