@@ -5,7 +5,6 @@ import com.example.simuladorclinica.clases.*;
 import com.example.simuladorclinica.ecuDiferencial.ResolverEcDiferencial;
 import com.example.simuladorclinica.generators.Generador;
 import com.example.simuladorclinica.generators.GeneradorNumerosExponencial;
-import com.example.simuladorclinica.generators.GeneradorNumerosNormales;
 import com.example.simuladorclinica.generators.GeneradorNumerosUniformes;
 import org.springframework.stereotype.Component;
 
@@ -156,7 +155,7 @@ public class Controller {
         Evento eventoLlegadaEmergencia = new Evento(tiempo, TipoEvento.LLEGADA_PACIENTE_EMERGENCIA, reloj);
 
         tiempo = generadorLlegadasEspecialista.getValor();
-        Evento eventoLlegadaEspecialista = new Evento(tiempo, TipoEvento.LLEGADA_PACIENTE_ESPECIALIDAD, reloj);
+        Evento eventoLlegadaEspecialista = new Evento(tiempo, TipoEvento.LLEGADA_PACIENTE_ESPECIALISTA, reloj);
 
         tiempo = generadorLlegadaTerapia.getValor();
         Evento eventoLlegadaTerapia = new Evento(tiempo, TipoEvento.LLEGADA_PACIENTE_TERAPIA, reloj);
@@ -182,12 +181,11 @@ public class Controller {
         Evento proxInterrupcion = new Evento(reloj + tiempoProximaInterrupcion, TipoEvento.INTERRUPCION, reloj);
         proxInterrupcion.setTiempoEnfriamentoLlave(reloj + tiempoProximaInterrupcion + duracionInterrupcion);
 
-        System.out.println(proxInterrupcion);
         eventos.add(proxInterrupcion);
     }
     public void simular(){
         for(int i = 0; i < lineasSimular; i++){
-            if ((i >= desdeDondeMostrar && i < desdeDondeMostrar + 300) || i == lineasSimular - 1){
+            if ((i >= desdeDondeMostrar && i < desdeDondeMostrar + 50) || i == lineasSimular - 1){
                 seDebeMostrar = true;
                 vectorEstado = new VectorEstado();
                 vectorEstado.setNroIteracion(String.valueOf(i));
@@ -223,8 +221,7 @@ public class Controller {
             resolverFinAtencion(evento);
         }else if(tipoEvento.esDeInterrupcion()) {
             resolverInterrupcion(evento);
-        }
-        else if(tipoEvento.esDeFinInterrupcion()){
+        } else if(tipoEvento.esDeFinInterrupcion()){
             resolverFinInterrupcion(evento);
         }
     }
@@ -240,16 +237,37 @@ public class Controller {
         return true;
     }
 
-    private void resolverInterrupcion(Evento evento){
-        vectorEstado.setTiempoFinalizacionInterrupcion(String.valueOf(evento.getTiempoEnfriamentoLlave()));
-        for(Evento eventoProgramado: eventos){
-            if(eventoProgramado.getTipoEvento() == TipoEvento.FIN_ATENCION_ESPECIALIDAD){
-                double nuevoTiempo =  ( eventoProgramado.getTiempo() - eventoProgramado.getTiempoCreacion() ) + evento.getTiempoEnfriamentoLlave();
-                eventoProgramado.setTiempo( nuevoTiempo );
+    private void resolverInterrupcion(Evento evento) {
+        if (seDebeMostrar) vectorEstado.setTiempoFinalizacionInterrupcion(String.valueOf(evento.getTiempoEnfriamentoLlave()));
+
+        // Crear una lista temporal para almacenar los eventos modificados
+        List<Evento> eventosModificados = new ArrayList<>();
+
+        // Iterar sobre la lista original de eventos
+        for (Evento eventoActual : eventos) {
+            // Verificar si el evento actual es de tipo FIN_ATENCION_ESPECIALIDAD
+            if (eventoActual.getTipoEvento() == TipoEvento.FIN_ATENCION_ESPECIALISTA) {
+                // Calcular el nuevo tiempo
+                double nuevoTiempo = ( eventoActual.getTiempo() - reloj ) + evento.getTiempoEnfriamentoLlave();
+
+                // Actualizar el tiempo del evento actual
+                eventoActual.setTiempo(nuevoTiempo);
+
+                // Agregar el evento actual a la lista de eventos modificados
+                eventosModificados.add(eventoActual);
             }
         }
+
+        // Remover todos los eventos de tipo FIN_ATENCION_ESPECIALIDAD de la lista original
+        eventos.removeAll(eventosModificados);
+
+        // Agregar el evento finalización a la lista de eventos
+        eventos.addAll(eventosModificados);
         Evento eventoFinalizacion = new Evento(evento.getTiempoEnfriamentoLlave(), TipoEvento.FIN_INTERRUPCION, reloj);
         eventos.add(eventoFinalizacion);
+
+        // Actualizar los tiempos de espera
+        actualizarTiemposEspera();
     }
 
     private void resolverFinInterrupcion(Evento evento){
@@ -263,7 +281,7 @@ public class Controller {
             tiempoProximaInterrupcion = VALOR_T * 8;
         }
 
-        vectorEstado.setTiempoProximaInterrupcion(String.valueOf(tiempoProximaInterrupcion + reloj));
+        if(seDebeMostrar) vectorEstado.setTiempoProximaInterrupcion(String.valueOf(tiempoProximaInterrupcion + reloj));
 
         double duracionInterrupcion;
         duracionInterrupcion = ResolverEcDiferencial.resolverEcuacion("0.025*x-0.5*y-12.85");
@@ -271,6 +289,7 @@ public class Controller {
         Evento proxInterrupcion = new Evento(reloj + tiempoProximaInterrupcion, TipoEvento.INTERRUPCION, reloj);
         proxInterrupcion.setTiempoEnfriamentoLlave(reloj + tiempoProximaInterrupcion + duracionInterrupcion);
         eventos.add(proxInterrupcion);
+        actualizarTiemposEspera();
     }
 
     private void resolverEventoLlegada(Evento evento){
@@ -315,19 +334,25 @@ public class Controller {
         if(servidorVacio){
             tiempo = 0;
             TipoEvento tipoEventoFinAtencion = null;
+
             if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.General){
                 tiempo = generadorFinAtencionGeneral.getValor();
                 tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_GENERAL;
+
             } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Emergencia){
                 tiempo = generadorFinAtencionEmergencia.getValor();
                 tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_EMERGENCIA;
-            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Especialista){
-                tiempo = generadorFinAtencionEspecialista.getValor();
-                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_ESPECIALIDAD;
-            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Terapia){
+
+            }  else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Terapia){
                 tiempo = generadorFinAtencionTerapia.getValor();
                 tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_TERAPIA;
+
+            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Especialista){
+                tiempo = generadorFinAtencionEspecialista.getValor();
+                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_ESPECIALISTA;
+
             }
+
             tiempoProximoEvento = tiempo + reloj;
 
             sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion, servidorCorrespondiente, reloj);
@@ -365,22 +390,30 @@ public class Controller {
         if(!servidorVacio){
             double tiempo = 0;
             TipoEvento tipoEventoFinAtencion = null;
-            if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.General){
-                tiempo = generadorFinAtencionGeneral.getValor();
-                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_GENERAL;
-            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Emergencia){
-                tiempo = generadorFinAtencionEmergencia.getValor();
-                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_EMERGENCIA;
-            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Especialista){
-                tiempo = generadorFinAtencionEspecialista.getValor();
-                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_ESPECIALIDAD;
-            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Terapia){
-                tiempo = generadorFinAtencionTerapia.getValor();
-                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_TERAPIA;
-            } else if (evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Recepcion){
-                tiempo = generadorFinAtencionRecepcion.getValor();
-                tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_RECEPCION;
-            }
+            tipoEventoFinAtencion = evento.getTipoEvento();
+
+            //if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.General){
+            //    tiempo = generadorFinAtencionGeneral.getValor();
+            //    tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_GENERAL;
+            //
+            //
+            //} else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Emergencia){
+            //    tiempo = generadorFinAtencionEmergencia.getValor();
+            //    tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_EMERGENCIA;
+            //
+            //} else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Especialista){
+            //    tiempo = generadorFinAtencionEspecialista.getValor();
+            //    tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_ESPECIALIDAD;
+            //
+            //} else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Terapia){
+            //    tiempo = generadorFinAtencionTerapia.getValor();
+            //    tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_TERAPIA;
+            //
+            //} else if (evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Recepcion){
+            //    tiempo = generadorFinAtencionRecepcion.getValor();
+            //    tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_RECEPCION;
+            //
+            //}
             double tiempoProximoEvento = tiempo + reloj;
             Evento sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion, evento.getServidor(),  reloj);
             eventos.add(sigEvento);
@@ -442,7 +475,7 @@ public class Controller {
                 case LLEGADA_PACIENTE_TERAPIA:
                     proxLlegadaTerapia = evento.getTiempo();
                     break;
-                case LLEGADA_PACIENTE_ESPECIALIDAD:
+                case LLEGADA_PACIENTE_ESPECIALISTA:
                     proxLlegadaEspecialidad = evento.getTiempo();
                     break;
             }
@@ -548,7 +581,7 @@ public class Controller {
                 if (evento.getServidor().getId() == 1) vectorEstado.setFin_Atencion_Emergencia_1_TiempoFin(String.valueOf(evento.getTiempo()));
                 if (evento.getServidor().getId() == 2) vectorEstado.setFin_Atencion_Emergencia_2_TiempoFin(String.valueOf(evento.getTiempo()));
             }
-            if (evento.getTipoEvento() == TipoEvento.FIN_ATENCION_ESPECIALIDAD) {
+            if (evento.getTipoEvento() == TipoEvento.FIN_ATENCION_ESPECIALISTA) {
                 if (evento.getServidor().getId() == 1) vectorEstado.setFin_Atencion_Especialista_1_TiempoFin(String.valueOf(evento.getTiempo()));
                 if (evento.getServidor().getId() == 2) vectorEstado.setFin_Atencion_Especialista_2_TiempoFin(String.valueOf(evento.getTiempo()));
                 if (evento.getServidor().getId() == 3) vectorEstado.setFin_Atencion_Especialista_3_TiempoFin(String.valueOf(evento.getTiempo()));
