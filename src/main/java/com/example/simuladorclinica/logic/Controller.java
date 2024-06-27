@@ -54,15 +54,15 @@ public class Controller {
     private int cantidadLlegadas;
 
     private int cantidadLlegadasConSistemaLleno;
+    private int cantidadMedicosGenerales;
 
-    public void prepararSimulacion(int lineasSimular, int desdeDondeMostrar, double mediaLlegadaGeneral, double mediaLlegadaEmergencia, double mediaLlegadaEspecialista, double mediaLlegadaTerapia, double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia, double mediaAtencionRecepcion){
+    public void prepararSimulacion(int lineasSimular, int desdeDondeMostrar, double mediaLlegadaGeneral, double mediaLlegadaEmergencia, double mediaLlegadaEspecialista, double mediaLlegadaTerapia, double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia, double mediaAtencionRecepcion, int cantidadMedicosGenerales){
         this.desdeDondeMostrar = desdeDondeMostrar;
         this.lineasSimular = lineasSimular;
-
         prepararColaEventos();
         instanciarGeneradoresLlegadas(mediaLlegadaGeneral, mediaLlegadaEmergencia,mediaLlegadaEspecialista, mediaLlegadaTerapia);
         instanciarGeneradoresAtencion(mediaAtencionGeneral, mediaAtencionEmergencia,mediaAtencionEspecialidad,mediaAtencionTerapia, mediaAtencionRecepcion);
-        instanciarServidores();
+        instanciarServidores(cantidadMedicosGenerales);
         generarPrimerosEventos();
     }
 
@@ -111,14 +111,18 @@ public class Controller {
 
     }
 
-    private void instanciarServidores(){
-        Servidor general1 = new Servidor(TipoAtencion.General,1);
+    private void instanciarServidores(int cantidadMedicosGenerales){
+        for (int i = 1; i <= cantidadMedicosGenerales; i++) {
+            Servidor general = new Servidor(TipoAtencion.General, i);
+            servidores.add(general);
+
+        /*Servidor general1 = new Servidor(TipoAtencion.General,1);
         Servidor general2 = new Servidor(TipoAtencion.General,2);
         Servidor general3 = new Servidor(TipoAtencion.General,3);
 
         servidores.add(general1);
         servidores.add(general2);
-        servidores.add(general3);
+        servidores.add(general3);*/
 
         Servidor emergencias1 = new Servidor(TipoAtencion.Emergencia,1);
         Servidor emergencias2 = new Servidor(TipoAtencion.Emergencia,2);
@@ -461,7 +465,7 @@ public class Controller {
         double tiempoOcupadoEspecialidad = 0;
         double tiempoOcupadoTerapia = 0;
 
-        for (Servidor servidor : servidores) {
+       /* for (Servidor servidor : servidores) {
             tiempoOcupadoServidores += servidor.getTiempoOcupacion();
 
             for (Paciente paciente : servidor.getCola()) {
@@ -482,7 +486,21 @@ public class Controller {
                     vectorEstado.setCola_Medico_General_3(String.valueOf(servidor.getLongitud()));
                     vectorEstado.setEstado_Medico_General_3(servidor.getEstado().toString());
                 }
+            }*/
+            for (Servidor servidor : servidores) {
+                tiempoOcupadoServidores += servidor.getTiempoOcupacion();
+
+                for (Paciente paciente : servidor.getCola()) {
+                    vectorEstado.addEstado_Espera_Paciente(paciente);
+                }
+
+                if (servidor.getTipoAtencion() == TipoAtencion.General) {
+                    tiempoOcupadoGeneral += servidor.getTiempoOcupacion();
+                    vectorEstado.setColaMedicoGeneral(servidor.getId(), String.valueOf(servidor.getLongitud()));
+                    vectorEstado.setEstadoMedicoGeneral(servidor.getId(), servidor.getEstado().toString());
+                }
             }
+
 
             if (servidor.getTipoAtencion() == TipoAtencion.Emergencia) {
                 tiempoOcupadoEmergencia += servidor.getTiempoOcupacion();
