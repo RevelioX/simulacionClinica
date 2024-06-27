@@ -42,7 +42,6 @@ public class VectorEstado {
     //--------------------------------------------//
     String Fin_Atencion_Terapia_Fisica_1_TiempoFin;
     String Fin_Atencion_Terapia_Fisica_2_TiempoFin;
-
     public String getFin_Atencion_Recepcion_1_TiempoFin() {
         return Fin_Atencion_Recepcion_1_TiempoFinString;
     }
@@ -55,12 +54,8 @@ public class VectorEstado {
     String Fin_Atencion_Recepcion_1_TiempoFinString;
     String Resultado_Recepcion;
     //--------------------------------------------//
-    String Estado_Medico_General_1;
-    String Cola_Medico_General_1;
-    String Estado_Medico_General_2;
-    String Cola_Medico_General_2;
-    String Estado_Medico_General_3;
-    String Cola_Medico_General_3;
+    String Estado_Medico_General;
+    String Cola_Medico_General;
     //--------------------------------------------//
     String Estado_Medico_Emergencia_1;
     String Cola_Medico_Emergencia_1;
@@ -413,8 +408,23 @@ public class VectorEstado {
     public void addEstado_Espera_Paciente(Paciente paciente){
         Estado_Espera_Paciente.add(new PacienteDTO(String.valueOf(paciente.getId()), paciente.getTipoAtencion().getNombre(), String.valueOf(paciente.getTiempoEspera()), paciente.getEstado()));
     }
+    public String getEstado_Medico_General() {
+        return Estado_Medico_General;
+    }
 
-    public String getFin_Atencion_General_1_TiempoFin() {
+    public void setEstado_Medico_General(String estado_Medico_General) {
+        Estado_Medico_General = estado_Medico_General;
+    }
+
+    public String getCola_Medico_General() {
+        return Cola_Medico_General;
+    }
+
+    public void setCola_Medico_General(String cola_Medico_General) {
+        Cola_Medico_General = cola_Medico_General;
+    }
+
+    /*public String getFin_Atencion_General_1_TiempoFin() {
         return Fin_Atencion_General_1_TiempoFin;
     }
 
@@ -436,7 +446,7 @@ public class VectorEstado {
 
     public void setFin_Atencion_General_3_TiempoFin(String fin_Atencion_General_3_TiempoFin) {
         Fin_Atencion_General_3_TiempoFin = fin_Atencion_General_3_TiempoFin;
-    }
+    }*/
 
     public String getFin_Atencion_Emergencia_1_TiempoFin() {
         return Fin_Atencion_Emergencia_1_TiempoFin;
@@ -510,7 +520,8 @@ public class VectorEstado {
         Resultado_Recepcion = resultado_Recepcion;
     }
 
-    public String getEstado_Medico_General_1() {
+
+    /*public String getEstado_Medico_General_1() {
         return Estado_Medico_General_1;
     }
 
@@ -556,7 +567,7 @@ public class VectorEstado {
 
     public void setCola_Medico_General_3(String cola_Medico_General_3) {
         Cola_Medico_General_3 = cola_Medico_General_3;
-    }
+    }*/
 
     public String getEstado_Medico_Emergencia_1() {
         return Estado_Medico_Emergencia_1;
