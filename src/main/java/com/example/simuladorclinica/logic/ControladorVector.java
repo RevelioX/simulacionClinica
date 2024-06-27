@@ -33,7 +33,8 @@ public class ControladorVector {
             request.getMediaAtencionEmergencia(),
             request.getMediaAtencionEspecialidad(),
             request.getMediaAtencionTerapia(),
-            request.getMediaAtencionRecepcion()
+            request.getMediaAtencionRecepcion(),
+            request.getCantMedicosGenerales()
     );
 
 

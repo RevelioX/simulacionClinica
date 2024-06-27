@@ -1,6 +1,7 @@
 package com.example.simuladorclinica.clases;
 
 public class SimulacionDTO {
+  private int cantMedicosGenerales;
   private int lineasSimular;
   private int desdeDondeMostrar;
   private double mediaLlegadaGeneral;
@@ -8,6 +9,15 @@ public class SimulacionDTO {
   private double mediaLlegadaEspecialista;
   private double mediaLlegadaTerapia;
   private double mediaAtencionGeneral;
+
+  public int getCantMedicosGenerales() {
+    return cantMedicosGenerales;
+  }
+
+  public void setCantMedicosGenerales(int cantMedicosGenerales) {
+    this.cantMedicosGenerales = cantMedicosGenerales;
+  }
+
   private double mediaAtencionEmergencia;
   private double mediaAtencionEspecialidad;
   private double mediaAtencionTerapia;

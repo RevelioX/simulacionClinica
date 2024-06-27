@@ -53,10 +53,13 @@ public class Controller {
     private int cantidadLlegadas;
 
     private int cantidadLlegadasConSistemaLleno;
+    private int cantidadMedicosGenerales;
 
-    public void prepararSimulacion(int lineasSimular, int desdeDondeMostrar, double mediaLlegadaGeneral, double mediaLlegadaEmergencia, double mediaLlegadaEspecialista, double mediaLlegadaTerapia, double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia, double mediaAtencionRecepcion){
+    public void prepararSimulacion(int lineasSimular, int desdeDondeMostrar, double mediaLlegadaGeneral, double mediaLlegadaEmergencia, double mediaLlegadaEspecialista, double mediaLlegadaTerapia, double mediaAtencionGeneral, double mediaAtencionEmergencia, double mediaAtencionEspecialidad, double mediaAtencionTerapia, double mediaAtencionRecepcion, int cantidadMedicosGenerales){
         this.desdeDondeMostrar = desdeDondeMostrar;
         this.lineasSimular = lineasSimular;
+
+        this.cantidadMedicosGenerales = cantidadMedicosGenerales;
 
         prepararColaEventos();
         instanciarGeneradoresLlegadas(mediaLlegadaGeneral, mediaLlegadaEmergencia,mediaLlegadaEspecialista, mediaLlegadaTerapia);
@@ -111,13 +114,10 @@ public class Controller {
     }
 
     private void instanciarServidores(){
-        Servidor general1 = new Servidor(TipoAtencion.General,1);
-        Servidor general2 = new Servidor(TipoAtencion.General,2);
-        Servidor general3 = new Servidor(TipoAtencion.General,3);
-
-        servidores.add(general1);
-        servidores.add(general2);
-        servidores.add(general3);
+        for (int i = 1; i <= cantidadMedicosGenerales; i++) {
+            Servidor general = new Servidor(TipoAtencion.General, i);
+            servidores.add(general);
+        }
 
         Servidor emergencias1 = new Servidor(TipoAtencion.Emergencia,1);
         Servidor emergencias2 = new Servidor(TipoAtencion.Emergencia,2);
@@ -146,6 +146,7 @@ public class Controller {
 
 
     }
+
     private void generarPrimerosEventos(){
         double tiempo;
         tiempo = generadorLlegadasGeneral.getValor();
