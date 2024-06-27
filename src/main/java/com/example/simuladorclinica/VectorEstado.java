@@ -145,6 +145,11 @@ public class VectorEstado {
         this.tiempoProximaInterrupcion = tiempoProximaInterrupcion;
     }
 
+    String cantidadAcumuladaPacientesEmergencia;
+
+    public void setCantidadAcumuladaPacientesEmergencia(String cantidadAcumuladaPacientesEmergencia){
+        this.cantidadAcumuladaPacientesEmergencia = cantidadAcumuladaPacientesEmergencia;
+    }
 
 
     public String getProbabilidadLlegadaConServicioLleno() {
@@ -179,6 +184,10 @@ public class VectorEstado {
         this.promedioEdadesPacientesAtendidos = promedioEdadesPacientesAtendidos;
     }
 
+    public String getCantidadAcumuladaPacientesEmergencia (){
+        return cantidadAcumuladaPacientesEmergencia;
+    }
+
     String acumuladorEdadesPacientesAtendidos;
 
     String promedioEdadesPacientesAtendidos;
@@ -192,6 +201,8 @@ public class VectorEstado {
     }
 
     String tiempoEsperaPacientesEmergenciaPromedio;
+
+
 
     //METODOS
 

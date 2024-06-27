@@ -616,8 +616,8 @@ public class Controller {
         //Tiempo promedio de emergencia promedio
         vectorEstado.setAcumuladorTiempoEsperaPacientesEmergencia(String.valueOf(acumuladorTiempoEsperaPacientesEmergencia));
         vectorEstado.setAcumuladorTiempoOcupadoServidores(String.valueOf(tiempoOcupadoServidores));
+        vectorEstado.setCantidadAcumuladaPacientesEmergencia(String.valueOf(acumuladorCantidadPacientesEmergencia));
         vectorEstado.setTiempoEsperaPacientesEmergenciaPromedio(String.valueOf(acumuladorTiempoEsperaPacientesEmergencia/acumuladorCantidadPacientesEmergencia));
-
         //Edades promedio de pacientes atendidos
         vectorEstado.setAcumuladorEdadesPacientesAtendidos(String.valueOf(acumuladorEdadesPacientes));
         if( contadorPacientesAtendidos != 0){
