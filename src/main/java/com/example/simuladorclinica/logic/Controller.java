@@ -177,7 +177,7 @@ public class Controller {
         }
 
         double duracionInterrupcion;
-        duracionInterrupcion = ResolverEcDiferencial.resolverEcuacion("0.025*x-0.5*y-12.85");
+        duracionInterrupcion = ResolverEcDiferencial.resolverEcuacion("0.025*x-0.5*y-12.85", reloj);
 
         Evento proxInterrupcion = new Evento(reloj + tiempoProximaInterrupcion, TipoEvento.INTERRUPCION, reloj);
         proxInterrupcion.setTiempoEnfriamentoLlave(reloj + tiempoProximaInterrupcion + duracionInterrupcion);
@@ -285,7 +285,7 @@ public class Controller {
         if(seDebeMostrar) vectorEstado.setTiempoProximaInterrupcion(String.valueOf(tiempoProximaInterrupcion + reloj));
 
         double duracionInterrupcion;
-        duracionInterrupcion = ResolverEcDiferencial.resolverEcuacion("0.025*x-0.5*y-12.85");
+        duracionInterrupcion = ResolverEcDiferencial.resolverEcuacion("0.025*x-0.5*y-12.85", reloj);
 
         Evento proxInterrupcion = new Evento(reloj + tiempoProximaInterrupcion, TipoEvento.INTERRUPCION, reloj);
         proxInterrupcion.setTiempoEnfriamentoLlave(reloj + tiempoProximaInterrupcion + duracionInterrupcion);
@@ -368,6 +368,7 @@ public class Controller {
         ;
 
         double randomRecepcion = generadorLlegadaRecepcion.getValor();
+       // System.out.println(randomRecepcion);
         boolean continuarAtencion;
         if (randomRecepcion < 0.25){
             continuarAtencion = true;
@@ -393,34 +394,36 @@ public class Controller {
             TipoEvento tipoEventoFinAtencion = null;
             tipoEventoFinAtencion = evento.getTipoEvento();
 
-            //if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.General){
-            //    tiempo = generadorFinAtencionGeneral.getValor();
+            if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.General){
+                tiempo = generadorFinAtencionGeneral.getValor();
             //    tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_GENERAL;
             //
             //
-            //} else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Emergencia){
-            //    tiempo = generadorFinAtencionEmergencia.getValor();
+            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Emergencia){
+                tiempo = generadorFinAtencionEmergencia.getValor();
             //    tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_EMERGENCIA;
             //
-            //} else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Especialista){
-            //    tiempo = generadorFinAtencionEspecialista.getValor();
+            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Especialista){
+                tiempo = generadorFinAtencionEspecialista.getValor();
             //    tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_ESPECIALIDAD;
             //
-            //} else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Terapia){
-            //    tiempo = generadorFinAtencionTerapia.getValor();
+            } else if(evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Terapia){
+                tiempo = generadorFinAtencionTerapia.getValor();
             //    tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_TERAPIA;
             //
-            //} else if (evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Recepcion){
-            //    tiempo = generadorFinAtencionRecepcion.getValor();
+            } else if (evento.getTipoEvento().getTipoAtencion() == TipoAtencion.Recepcion){
+                tiempo = generadorFinAtencionRecepcion.getValor();
             //    tipoEventoFinAtencion = TipoEvento.FIN_ATENCION_RECEPCION;
             //
-            //}
+            }
+
             double tiempoProximoEvento = tiempo + reloj;
             Evento sigEvento = new Evento(tiempoProximoEvento, tipoEventoFinAtencion, evento.getServidor(),  reloj);
             eventos.add(sigEvento);
         }
 
         if(evento.getTipoEvento() != TipoEvento.FIN_ATENCION_RECEPCION && continuarAtencion){
+            pacienteQueTermino.setTipoAtencion(TipoAtencion.Recepcion);
             if(seDebeMostrar) vectorEstado.setResultado_Recepcion("Pasa Recepción");
             List<Servidor> serviroresTipoCorrespondiente = servidores.stream().filter(
                     servidor -> {
@@ -643,13 +646,13 @@ public class Controller {
         //Estadistica: Porc. Ocupacion Especialidad
         //Estadistica: Porc. Ocupacion Emergencias
         //Estadistica: Porc. Ocupacion Terapia
-        //ESTADISTICA: Tamaño promedio cola Recepción == ?? NI IDEA COMO CALCULARLO
+        //ESTADISTICA: Tamaño promedio cola Recepción
 
-        //estadisticas inventadas por nosotrosssss
+        //estadisticas inventadas por nosotros
 
-        //ESTADISTICA: Cant. pacientes atendidos (re-easy, y si pa q no la vamos a complicar)
+        //ESTADISTICA: Cant. pacientes atendidos
         //ESTADISTICA: Porc. ocupación servidores emergencias
-        //ESTADISTICA: Cantidad promedio de pacientes en el sistema ?? No se si es tan facil de calcular tengo q ver
+        //ESTADISTICA: Cantidad promedio de pacientes en el sistema
         vectorAcumulador.add(vectorEstado);
 
 

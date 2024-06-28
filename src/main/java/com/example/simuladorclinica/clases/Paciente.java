@@ -65,7 +65,7 @@ public class Paciente {
 
 
     public void setTipoAtencion(TipoAtencion atencion){
-      tipoAtencion.setNombre(atencion.getNombre());
+      tipoAtencion = atencion;
     }
 
     public void aumentarTiempoEspera(Double tiempo){

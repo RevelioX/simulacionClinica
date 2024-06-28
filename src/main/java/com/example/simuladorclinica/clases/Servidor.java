@@ -43,9 +43,9 @@ public class Servidor {
     }
 
     Paciente atendido = cola.remove(0);
-    if (continuaAtencion) {
-     // atendido.setTipoAtencion(TipoAtencion.Recepcion);
-     // atendido.setEstado(Estado.ESPERANDO_RECEPCION);
+    if (continuaAtencion && atendido != null) {
+     //atendido.setTipoAtencion(TipoAtencion.Recepcion);
+     //atendido.setEstado(Estado.ESPERANDO_RECEPCION);
 
       if (!cola.isEmpty()) {
         Paciente siguiente = cola.get(0);
@@ -69,6 +69,7 @@ public class Servidor {
 
   public void añadirCola(Paciente paciente){
     estado = Estado.OCUPADO;
+    paciente.setTipoAtencion(tipoAtencion);
 
     if (cola.isEmpty()){ //todo hay q añadir el manejo de los casos q este servidor sea "Recepcion"
       paciente.setEstado(Estado.SIENDO_ATENDIDO);

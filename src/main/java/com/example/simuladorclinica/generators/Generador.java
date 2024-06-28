@@ -17,7 +17,7 @@ public abstract class Generador {
 
     }
 
-    public double getValor() {
+    public synchronized  double  getValor() {
         if(valores.isEmpty()){
             generarValor(1000);
         }
