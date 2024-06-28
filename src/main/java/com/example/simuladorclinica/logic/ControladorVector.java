@@ -13,6 +13,7 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class ControladorVector {
 
+
   @Autowired
   private com.example.simuladorclinica.logic.Controller controladorSimulacion;
 
